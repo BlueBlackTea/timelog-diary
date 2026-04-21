@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* 폰트 */
+  --font-handwriting: var(--font-handwriting);
+  --font-gothic: var(--font-gothic);
+
+  /* 페이퍼 색상 */
+  --color-paper: #fafaf7;
+  --color-paper-dark: #f2f0e8;
+  --color-ink: #1a1a1a;
+  --color-ink-muted: #6b6860;
+  --color-line: #e2dfd4;
+
+  /* 업무유형 형광펜 색상 */
+  --color-work-task: #efa4b8;
+  --color-work-meeting: #afa9ec;
+  --color-work-study: #ffe600;
+  --color-work-outside: #5dcaa5;
+  --color-work-etc: #d3d1c7;
+
+  /* 줄 간격 */
+  --line-height-ruled: 28px;
+}
+
+/* 기본 배경 */
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
+
+/* 손글씨 폰트 유틸리티 */
+.font-handwriting {
+  font-family: var(--font-handwriting), cursive;
+}
+
+.font-gothic {
+  font-family: var(--font-gothic), sans-serif;
+}
+
+/* 줄 노트 패턴 — RuledLines 컴포넌트에서 사용 */
+.ruled-bg {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent calc(var(--line-height-ruled) - 1px),
+    var(--color-line) calc(var(--line-height-ruled) - 1px),
+    var(--color-line) var(--line-height-ruled)
+  );
+  background-size: 100% var(--line-height-ruled);
+}
+
+/* 페이퍼 느낌 경계선 */
+.border-paper {
+  border-color: var(--color-line);
+}
