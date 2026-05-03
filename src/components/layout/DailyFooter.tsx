@@ -16,7 +16,7 @@ export default function DailyFooter() {
           <textarea
             value={day.memo}
             onChange={(e) => setMemo(e.target.value)}
-            placeholder="자유 메모..."
+            placeholder="자유 메모"
             className="flex-1 font-handwriting text-lg bg-transparent border-none outline-none resize-none text-[var(--color-ink)] placeholder:text-[var(--color-line)] leading-7"
           />
         </div>
@@ -29,7 +29,7 @@ export default function DailyFooter() {
           <textarea
             value={day.review}
             onChange={(e) => setReview(e.target.value)}
-            placeholder="오늘 하루 회고..."
+            placeholder="오늘 하루 회고"
             className="flex-1 font-handwriting text-lg bg-transparent border-none outline-none resize-none text-[var(--color-ink)] placeholder:text-[var(--color-line)] leading-7"
           />
         </div>
@@ -42,7 +42,7 @@ export default function DailyFooter() {
           <textarea
             value={day.tomorrow}
             onChange={(e) => setTomorrow(e.target.value)}
-            placeholder="내일 포인트..."
+            placeholder="내일 포인트"
             className="flex-1 font-handwriting text-lg bg-transparent border-none outline-none resize-none text-[var(--color-ink)] placeholder:text-[var(--color-line)] leading-7"
           />
         </div>

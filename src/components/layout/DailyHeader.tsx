@@ -31,10 +31,10 @@ export default function DailyHeader() {
       <header className="flex items-end gap-6 px-8 py-4 border-b border-[var(--color-line)] bg-[var(--color-paper)]">
         {/* 날짜 / 요일 */}
         <div className="flex items-baseline gap-3 shrink-0">
-          <span className="font-gothic text-4xl font-black tracking-tight text-[var(--color-ink)] leading-none">
+          <span className="font-schoolbell text-4xl tracking-tight text-[var(--color-ink)] leading-none">
             {dateStr}
           </span>
-          <span className="font-gothic text-xl font-bold text-[var(--color-ink-muted)] leading-none">
+          <span className="font-schoolbell text-xl text-[var(--color-ink-muted)] leading-none">
             {dayLabel}
           </span>
         </div>
@@ -44,7 +44,7 @@ export default function DailyHeader() {
           <span className="font-gothic text-xs font-bold text-[var(--color-ink-muted)] tracking-widest uppercase">
             Total
           </span>
-          <span className="font-gothic text-2xl font-black text-[var(--color-ink)] leading-none">
+          <span className="font-schoolbell text-2xl text-[var(--color-ink)] leading-none">
             {formatMinutes(day.totalMinutes)}
           </span>
         </div>
@@ -54,7 +54,7 @@ export default function DailyHeader() {
           type="text"
           value={day.comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="오늘 하루 한 줄 코멘트..."
+          placeholder="오늘 하루 한 줄 코멘트"
           className="flex-1 font-handwriting text-xl bg-transparent border-none outline-none text-[var(--color-ink)] placeholder:text-[var(--color-line)] caret-[var(--color-ink-muted)]"
         />
 

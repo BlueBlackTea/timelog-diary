@@ -5,6 +5,7 @@ import DailyHeader from "@/components/layout/DailyHeader";
 import DailyFooter from "@/components/layout/DailyFooter";
 import TaskPanel from "@/components/layout/TaskPanel";
 import TimeTablePanel from "@/components/layout/TimeTablePanel";
+import FocusOverlay from "@/components/daily/FocusOverlay";
 
 const MIN_TASK_PCT = 25;
 const MAX_TASK_PCT = 80;
@@ -72,6 +73,7 @@ export default function DailyPage() {
       </main>
 
       <DailyFooter />
+      <FocusOverlay />
     </div>
   );
 }

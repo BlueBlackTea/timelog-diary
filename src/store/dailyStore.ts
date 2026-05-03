@@ -46,12 +46,22 @@ export interface DayData {
   totalMinutes: number;
 }
 
+export interface ActiveTimer {
+  taskId: string;
+  taskName: string;
+  detail: string;
+  workType: WorkType;
+  color: string;
+  startedAt: number; // Date.now()
+}
+
 interface DailyStore {
   currentDate: string;
   day: DayData;
   tasks: Task[];
   timeBlocks: TimeBlock[];
   allDayTotals: Record<string, number>;
+  activeTimer: ActiveTimer | null;
 
   setCurrentDate: (date: string) => void;
   setComment: (comment: string) => void;
@@ -65,6 +75,8 @@ interface DailyStore {
   updateTimeBlock: (id: string, updates: Partial<TimeBlock>) => void;
   removeTimeBlock: (id: string) => void;
   recalcTotalMinutes: () => void;
+  startTimer: (task: Task) => void;
+  stopTimer: () => void;
 }
 
 function genId() {
@@ -86,6 +98,7 @@ export const useDailyStore = create<DailyStore>()(
       tasks: [],
       timeBlocks: [],
       allDayTotals: {},
+      activeTimer: null,
 
       setCurrentDate: (date) =>
         set({ currentDate: date, day: { ...get().day, date } }),
@@ -156,7 +169,49 @@ export const useDailyStore = create<DailyStore>()(
             allDayTotals: { ...s.allDayTotals, [s.currentDate]: total },
           };
         }),
+
+      startTimer: (task) =>
+        set({
+          activeTimer: {
+            taskId: task.id,
+            taskName: task.taskName,
+            detail: task.detail,
+            workType: task.workType,
+            color: task.color,
+            startedAt: Date.now(),
+          },
+        }),
+
+      stopTimer: () => {
+        const { activeTimer, currentDate, addTimeBlock } = get();
+        if (!activeTimer) return;
+        const endedAt = Date.now();
+        const durationMinutes = Math.max(1, Math.round((endedAt - activeTimer.startedAt) / 60000));
+        set({ activeTimer: null });
+        addTimeBlock({
+          date: currentDate,
+          taskId: activeTimer.taskId,
+          taskName: activeTimer.taskName,
+          detail: activeTimer.detail,
+          workType: activeTimer.workType,
+          color: activeTimer.color,
+          start: dayjs(activeTimer.startedAt).format("HH:mm"),
+          end: dayjs(endedAt).format("HH:mm"),
+          durationMinutes,
+          memo: "",
+        });
+      },
     }),
-    { name: "timelog-diary" }
+    {
+      name: "timelog-diary",
+      partialize: (s) => ({
+        currentDate: s.currentDate,
+        day: s.day,
+        tasks: s.tasks,
+        timeBlocks: s.timeBlocks,
+        allDayTotals: s.allDayTotals,
+        // activeTimer 제외 — 새로고침 시 타이머 초기화
+      }),
+    }
   )
 );

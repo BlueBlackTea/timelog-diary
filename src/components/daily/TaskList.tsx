@@ -1,6 +1,7 @@
 "use client";
 
 import { useDailyStore, type Task } from "@/store/dailyStore";
+import type { ActiveTimer } from "@/store/dailyStore";
 import Highlighter from "@/components/ui/Highlighter";
 import { useResizeObserver } from "@/hooks/useResizeObserver";
 
@@ -22,18 +23,18 @@ interface TaskNameRowProps {
   taskName: string;
   color: string;
   allCompleted: boolean;
+  activeTimer: ActiveTimer | null;
+  onStartTimer: () => void;
 }
 
-function TaskNameRow({ taskName, color, allCompleted }: TaskNameRowProps) {
+function TaskNameRow({ taskName, color, allCompleted, activeTimer, onStartTimer }: TaskNameRowProps) {
   const { ref, width } = useResizeObserver<HTMLSpanElement>();
+  const isRunning = activeTimer?.taskName === taskName;
 
   return (
     <div className="flex items-center gap-2 px-3 pt-2 pb-0.5">
       {/* 형광펜 + 업무명 */}
-      <div
-        className="relative"
-        style={{ height: 20 }}  // Highlighter height와 맞춤
-      >
+      <div className="relative flex-1" style={{ height: 20 }}>
         <span
           ref={ref}
           className="relative z-10 font-handwriting text-lg leading-5 whitespace-nowrap"
@@ -48,6 +49,30 @@ function TaskNameRow({ taskName, color, allCompleted }: TaskNameRowProps) {
           id={taskName}
         />
       </div>
+
+      {/* 포커스 타이머 시작 버튼 */}
+      <button
+        onClick={onStartTimer}
+        title="포커스 타이머 시작"
+        className="shrink-0 transition-opacity hover:opacity-100"
+        style={{
+          opacity: isRunning ? 1 : 0.35,
+          color: isRunning ? color : "var(--color-ink-muted)",
+        }}
+      >
+        {isRunning ? (
+          /* 기록 중 — 펄스 원 */
+          <span
+            className="inline-block w-2 h-2 rounded-full"
+            style={{ backgroundColor: color }}
+          />
+        ) : (
+          /* 재생 삼각형 */
+          <svg width="9" height="10" viewBox="0 0 9 10" fill="currentColor">
+            <polygon points="0,0 9,5 0,10" />
+          </svg>
+        )}
+      </button>
     </div>
   );
 }
@@ -85,7 +110,7 @@ function DetailRow({ task }: DetailRowProps) {
 
 // ── 메인 TaskList ─────────────────────────────────────────────────────────
 export default function TaskList() {
-  const { tasks } = useDailyStore();
+  const { tasks, activeTimer, startTimer } = useDailyStore();
 
   if (tasks.length === 0) {
     return (
@@ -120,6 +145,8 @@ export default function TaskList() {
               taskName={name}
               color={color}
               allCompleted={allCompleted}
+              activeTimer={activeTimer}
+              onStartTimer={() => startTimer(groupTasks[0])}
             />
             {groupTasks.map((task) => (
               <DetailRow key={task.id} task={task} />
