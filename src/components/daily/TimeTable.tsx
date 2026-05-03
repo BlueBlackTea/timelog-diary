@@ -25,6 +25,13 @@ const ERASE_COLOR = "#C85050"; // 지우개 표시 색
 
 // ── 유틸 ──────────────────────────────────────────────────────────────────
 
+function formatDuration(minutes: number): string {
+  if (minutes < 60) return `${minutes}분`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m === 0 ? `${h}시간` : `${h}시간 ${m}분`;
+}
+
 function toMin(time: string): number {
   const [h, m] = time.split(":").map(Number);
   return h * 60 + m;
@@ -133,6 +140,16 @@ interface TimeTableProps {
 
 // ── 메인 컴포넌트 ─────────────────────────────────────────────────────────
 
+// ── 툴팁 ─────────────────────────────────────────────────────────────────
+
+interface TooltipInfo {
+  block: import("@/store/dailyStore").TimeBlock;
+  x: number;
+  y: number;
+}
+
+// ── 메인 컴포넌트 body ───────────────────────────────────────────────────
+
 export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTableProps) {
   const { timeBlocks, removeTimeBlock } = useDailyStore();
 
@@ -142,6 +159,16 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
 
   // 그리드 콘텐츠 너비 (px) — Highlighter width 계산용
   const [gridContentW, setGridContentW] = useState(0);
+
+  // 툴팁 상태
+  const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
+
+  // 툴팁 외부 클릭 시 닫기
+  useEffect(() => {
+    function close() { setTooltip(null); }
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
+  }, []);
 
   useEffect(() => {
     if (!gridRef.current) return;
@@ -313,40 +340,111 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
           );
         })}
 
-        {/* ── TimeBlock 세그먼트 렌더링 ── */}
-        {allSegments.map((seg) => (
-          <div
-            key={seg.key}
-            className="absolute rounded-sm overflow-hidden group"
-            style={{
-              top:    seg.hour * ROW_H + 2,
-              height: ROW_H - 4,
-              left:   `${seg.leftFrac  * 100}%`,
-              width:  `max(${seg.widthFrac * 100}%, 3px)`,
-              backgroundColor: seg.block.color,
-              opacity: 0.85,
-              pointerEvents: mode === "view" ? "auto" : "none",
-            }}
-          >
-            {seg.isFirst && (
-              <p className="font-handwriting text-[10px] leading-tight text-[var(--color-ink)] px-1 pt-0.5 truncate">
-                {seg.block.taskName}
-              </p>
-            )}
-            {mode === "view" && (
-              <button
-                className="absolute top-0.5 right-0.5 w-3.5 h-3.5 flex items-center justify-center
-                           rounded-full text-[var(--color-ink)] opacity-0 group-hover:opacity-70
-                           hover:!opacity-100 transition-opacity bg-white/50 text-[8px] font-bold leading-none"
-                onClick={(e) => { e.stopPropagation(); removeTimeBlock(seg.block.id); }}
-                title="삭제"
-              >
-                ×
-              </button>
-            )}
-          </div>
-        ))}
+        {/* ── TimeBlock 세그먼트 렌더링 (Highlighter 스타일) ── */}
+        {allSegments.map((seg) => {
+          const segPixelW = seg.widthFrac * gridContentW;
+          return (
+            <div
+              key={seg.key}
+              className="absolute overflow-visible group"
+              style={{
+                top:    seg.hour * ROW_H + HL_TOP,
+                height: HL_H,
+                left:   `${seg.leftFrac * 100}%`,
+                width:  `max(${seg.widthFrac * 100}%, 3px)`,
+                pointerEvents: mode === "view" ? "auto" : "none",
+                cursor: mode === "view" ? "pointer" : "default",
+              }}
+              onClick={(e) => {
+                if (mode !== "view") return;
+                e.stopPropagation();
+                setTooltip((prev) =>
+                  prev?.block.id === seg.block.id ? null : { block: seg.block, x: e.clientX, y: e.clientY }
+                );
+              }}
+            >
+              {/* 형광펜 SVG */}
+              {segPixelW > 0 && (
+                <Highlighter
+                  color={seg.block.color}
+                  width={segPixelW}
+                  id={`block-${seg.key}`}
+                />
+              )}
+
+              {/* 업무명 오버레이 (첫 세그먼트만) */}
+              {seg.isFirst && segPixelW > 18 && (
+                <span className="absolute inset-0 flex items-center px-1 font-handwriting text-[9px] leading-none text-[var(--color-ink)] truncate z-10 pointer-events-none">
+                  {seg.block.taskName}
+                </span>
+              )}
+
+              {/* 삭제 버튼 */}
+              {mode === "view" && (
+                <button
+                  className="absolute -top-0.5 right-0 z-20 w-3.5 h-3.5 flex items-center justify-center
+                             rounded-full text-[var(--color-ink)] opacity-0 group-hover:opacity-70
+                             hover:!opacity-100 transition-opacity bg-white/60 text-[8px] font-bold leading-none"
+                  onClick={(e) => { e.stopPropagation(); setTooltip(null); removeTimeBlock(seg.block.id); }}
+                  title="삭제"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
+
+      {/* ── 툴팁 ── */}
+      {tooltip && (
+        <div
+          className="fixed z-50 bg-[var(--color-paper)] border border-[var(--color-line)] shadow-lg rounded-sm px-3 py-2.5 min-w-[170px] max-w-[220px]"
+          style={{
+            left: Math.min(tooltip.x + 14, (typeof window !== "undefined" ? window.innerWidth : 600) - 230),
+            top:  Math.min(tooltip.y + 14, (typeof window !== "undefined" ? window.innerHeight : 800) - 170),
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* 업무유형 뱃지 */}
+          <div className="flex items-center gap-1.5 mb-1">
+            <span
+              className="shrink-0 w-2 h-2 rounded-full"
+              style={{ backgroundColor: tooltip.block.color }}
+            />
+            <span
+              className="font-gothic text-[9px] font-bold tracking-wide"
+              style={{ color: tooltip.block.color }}
+            >
+              {tooltip.block.workType}
+            </span>
+          </div>
+
+          {/* 업무명 */}
+          <p className="font-handwriting text-[15px] leading-snug text-[var(--color-ink)]">
+            {tooltip.block.taskName}
+          </p>
+
+          {/* 상세 내용 */}
+          {tooltip.block.detail && (
+            <p className="font-handwriting text-[12px] text-[var(--color-ink-muted)] leading-snug mt-0.5">
+              {tooltip.block.detail}
+            </p>
+          )}
+
+          <div className="my-2 border-t border-[var(--color-line)]" />
+
+          {/* 시간 범위 */}
+          <p className="font-gothic text-[10px] text-[var(--color-ink-muted)] tracking-wide">
+            {tooltip.block.start} ~ {tooltip.block.end}
+          </p>
+
+          {/* 경과 시간 */}
+          <p className="font-gothic text-[12px] font-bold text-[var(--color-ink)] mt-0.5">
+            {formatDuration(tooltip.block.durationMinutes)}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
