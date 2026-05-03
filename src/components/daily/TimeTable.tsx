@@ -111,22 +111,31 @@ interface TimeTableProps {
 export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTableProps) {
   const { timeBlocks, removeTimeBlock } = useDailyStore();
   const isPainting = useRef(false);
+  const lockedHour = useRef<number | null>(null); // 드래그 시작 시 행(hour) 고정
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // 드로우: gridRef BoundingClientRect 기준 좌표 계산으로 cell index 결정
-  // elementFromPoint 대신 직접 계산 → implicit pointer capture 환경에서도 안정적
+  // 좌표 → 그리드 열(col) 계산 (행은 lockedHour로 고정)
+  function getCol(clientX: number, rect: DOMRect): number | null {
+    const relX = clientX - rect.left - LABEL_W;
+    if (relX < 0 || relX >= rect.width - LABEL_W) return null;
+    return Math.min(COLS - 1, Math.max(0, Math.floor((relX / (rect.width - LABEL_W)) * COLS)));
+  }
+
   function paintAt(clientX: number, clientY: number) {
     if (mode === "view" || !gridRef.current) return;
     const rect = gridRef.current.getBoundingClientRect();
-    const relX = clientX - rect.left - LABEL_W; // 레이블 열 제외
-    const relY = clientY - rect.top;
 
-    if (relX < 0 || relX >= rect.width - LABEL_W) return;
-    if (relY < 0 || relY >= 24 * ROW_H) return;
+    // 행(hour): pointerDown 때 고정, 드래그 내내 변경 안 됨 → 수평 drag 전용
+    let hour = lockedHour.current;
+    if (hour === null) {
+      const relY = clientY - rect.top;
+      if (relY < 0 || relY >= 24 * ROW_H) return;
+      hour = Math.min(23, Math.max(0, Math.floor(relY / ROW_H)));
+      lockedHour.current = hour;
+    }
 
-    const col  = Math.min(COLS - 1, Math.floor((relX / (rect.width - LABEL_W)) * COLS));
-    const hour = Math.min(23, Math.floor(relY / ROW_H));
-    if (col < 0 || hour < 0) return;
+    const col = getCol(clientX, rect);
+    if (col === null) return;
 
     const idx = hour * COLS + col;
     const next = new Set(paintedCells);
@@ -137,6 +146,7 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
   function handlePointerDown(e: React.PointerEvent) {
     if (mode === "view") return;
     isPainting.current = true;
+    lockedHour.current = null; // 새 드래그마다 행 초기화
     paintAt(e.clientX, e.clientY);
   }
 
@@ -147,6 +157,7 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
 
   function handlePointerUp() {
     isPainting.current = false;
+    lockedHour.current = null;
   }
 
   // 모든 블록 세그먼트 계산
