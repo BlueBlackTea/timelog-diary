@@ -26,9 +26,9 @@
 
 ## 현재 상태
 
-**1단계 UI 구현 진행 중 — 13/15 완료**
+**1단계 UI 구현 완료 — 16/16 완료**
 
-마지막 작업: DESIGNER (2026-04-19)
+마지막 작업: DESIGNER (2026-05-01)
 
 ### 1단계 티켓 현황
 - [x] T1-01 Next.js 프로젝트 초기 세팅
@@ -40,25 +40,30 @@
 - [x] T1-07 형광펜 효과 SVG 컴포넌트 `<Highlighter>`
 - [x] T1-08 Task 완료 체크 토글
 - [x] T1-09 타임테이블 그리드 렌더링 (src/components/daily/TimeTable.tsx)
-- [ ] T1-10 Time Block 드래그 입력
-- [ ] T1-11 구조화 입력기 (드롭다운)
+- [x] T1-10 Time Block 드래그 입력 (TimeTable.tsx drag + TimeBlockPopup.tsx)
+- [x] T1-11 구조화 입력기 (TimeBlockPopup — Task 라디오 선택 + 시간 수동 조정)
 - [x] T1-12 총 기록 시간 자동 계산 및 상단 표시 (store ↔ DailyHeader 연동 완료)
 - [x] T1-13 하단 메모 / 회고 / 내일 포인트 텍스트 영역
 - [x] T1-14 업무유형 칩(Chip) 컴포넌트 분리 (src/components/ui/Chip.tsx)
 - [x] T1-15 업무명 색상 배정 로직 (workType → WORK_TYPE_COLORS 자동 매핑)
+- [x] T1-16 달력 뷰 (CalendarModal — 월별 기록 그라데이션 + 날짜 이동, localStorage persist)
 
 ### 전달 사항
 - ResizeObserver: `useResizeObserver<HTMLSpanElement>()` 훅. ref를 span에 붙이고 width를 Highlighter에 전달
 - Highlighter 컨테이너는 `relative` + `style={{ height: 20 }}`로 감싸야 inset-0 정렬이 맞음
 - TaskInput: taskName 유지 정책 — 같은 업무명으로 내용만 다르게 추가할 때 taskName 초기화 안 함
 - T1-15(색상 배정): workType → WORK_TYPE_COLORS 자동 매핑. 커스텀 색상 선택 UI는 미구현
+- T1-16(달력 뷰): Zustand persist(localStorage) + allDayTotals 기반. Phase 2에서 Supabase로 대체 예정
 
 ---
 
 ## 다음 할 일
 
-- [ ] T1-10 Time Block 드래그 입력 (타임테이블 범위 선택 → 팝업 → Task 연결)
-- [ ] T1-11 구조화 입력기 (업무유형→업무명→내용 드롭다운)
+2단계(Supabase) 진입 준비:
+- [ ] T2-01 Supabase 프로젝트 생성 및 테이블 생성
+- [ ] T2-02 Supabase 클라이언트 연결 설정
+- [ ] T2-03 ~ T2-05 Day / Task / TimeBlock CRUD 연동
+- [ ] T2-06 날짜 이동: localStorage allDayTotals → Supabase days 테이블 조회로 대체
 
 ---
 

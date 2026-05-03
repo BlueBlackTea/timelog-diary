@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import dayjs from "dayjs";
 
 export type WorkType = "회의" | "업무" | "공부" | "외근" | "기타";
@@ -50,6 +51,7 @@ interface DailyStore {
   day: DayData;
   tasks: Task[];
   timeBlocks: TimeBlock[];
+  allDayTotals: Record<string, number>;
 
   setCurrentDate: (date: string) => void;
   setComment: (comment: string) => void;
@@ -69,85 +71,92 @@ function genId() {
   return Math.random().toString(36).slice(2, 10);
 }
 
-export const useDailyStore = create<DailyStore>((set, get) => ({
-  currentDate: dayjs().format("YYYY-MM-DD"),
-  day: {
-    date: dayjs().format("YYYY-MM-DD"),
-    comment: "",
-    memo: "",
-    review: "",
-    tomorrow: "",
-    totalMinutes: 0,
-  },
-  tasks: [],
-  timeBlocks: [],
-
-  setCurrentDate: (date) =>
-    set({ currentDate: date, day: { ...get().day, date } }),
-
-  setComment: (comment) =>
-    set((s) => ({ day: { ...s.day, comment } })),
-
-  setMemo: (memo) =>
-    set((s) => ({ day: { ...s.day, memo } })),
-
-  setReview: (review) =>
-    set((s) => ({ day: { ...s.day, review } })),
-
-  setTomorrow: (tomorrow) =>
-    set((s) => ({ day: { ...s.day, tomorrow } })),
-
-  addTask: (task) =>
-    set((s) => ({
-      tasks: [...s.tasks, { ...task, id: `task_${genId()}` }],
-    })),
-
-  updateTask: (id, updates) =>
-    set((s) => ({
-      tasks: s.tasks.map((t) => (t.id === id ? { ...t, ...updates } : t)),
-    })),
-
-  toggleTask: (id) =>
-    set((s) => ({
-      tasks: s.tasks.map((t) =>
-        t.id === id ? { ...t, completed: !t.completed } : t
-      ),
-    })),
-
-  addTimeBlock: (block) => {
-    set((s) => ({
-      timeBlocks: [
-        ...s.timeBlocks,
-        { ...block, id: `block_${genId()}` },
-      ],
-    }));
-    get().recalcTotalMinutes();
-  },
-
-  updateTimeBlock: (id, updates) => {
-    set((s) => ({
-      timeBlocks: s.timeBlocks.map((b) =>
-        b.id === id ? { ...b, ...updates } : b
-      ),
-    }));
-    get().recalcTotalMinutes();
-  },
-
-  removeTimeBlock: (id) => {
-    set((s) => ({
-      timeBlocks: s.timeBlocks.filter((b) => b.id !== id),
-    }));
-    get().recalcTotalMinutes();
-  },
-
-  recalcTotalMinutes: () =>
-    set((s) => ({
+export const useDailyStore = create<DailyStore>()(
+  persist(
+    (set, get) => ({
+      currentDate: dayjs().format("YYYY-MM-DD"),
       day: {
-        ...s.day,
-        totalMinutes: s.timeBlocks.reduce(
-          (sum, b) => sum + b.durationMinutes,
-          0
-        ),
+        date: dayjs().format("YYYY-MM-DD"),
+        comment: "",
+        memo: "",
+        review: "",
+        tomorrow: "",
+        totalMinutes: 0,
       },
-    })),
-}));
+      tasks: [],
+      timeBlocks: [],
+      allDayTotals: {},
+
+      setCurrentDate: (date) =>
+        set({ currentDate: date, day: { ...get().day, date } }),
+
+      setComment: (comment) =>
+        set((s) => ({ day: { ...s.day, comment } })),
+
+      setMemo: (memo) =>
+        set((s) => ({ day: { ...s.day, memo } })),
+
+      setReview: (review) =>
+        set((s) => ({ day: { ...s.day, review } })),
+
+      setTomorrow: (tomorrow) =>
+        set((s) => ({ day: { ...s.day, tomorrow } })),
+
+      addTask: (task) =>
+        set((s) => ({
+          tasks: [...s.tasks, { ...task, id: `task_${genId()}` }],
+        })),
+
+      updateTask: (id, updates) =>
+        set((s) => ({
+          tasks: s.tasks.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+        })),
+
+      toggleTask: (id) =>
+        set((s) => ({
+          tasks: s.tasks.map((t) =>
+            t.id === id ? { ...t, completed: !t.completed } : t
+          ),
+        })),
+
+      addTimeBlock: (block) => {
+        set((s) => ({
+          timeBlocks: [
+            ...s.timeBlocks,
+            { ...block, id: `block_${genId()}` },
+          ],
+        }));
+        get().recalcTotalMinutes();
+      },
+
+      updateTimeBlock: (id, updates) => {
+        set((s) => ({
+          timeBlocks: s.timeBlocks.map((b) =>
+            b.id === id ? { ...b, ...updates } : b
+          ),
+        }));
+        get().recalcTotalMinutes();
+      },
+
+      removeTimeBlock: (id) => {
+        set((s) => ({
+          timeBlocks: s.timeBlocks.filter((b) => b.id !== id),
+        }));
+        get().recalcTotalMinutes();
+      },
+
+      recalcTotalMinutes: () =>
+        set((s) => {
+          const total = s.timeBlocks.reduce(
+            (sum, b) => sum + b.durationMinutes,
+            0
+          );
+          return {
+            day: { ...s.day, totalMinutes: total },
+            allDayTotals: { ...s.allDayTotals, [s.currentDate]: total },
+          };
+        }),
+    }),
+    { name: "timelog-diary" }
+  )
+);

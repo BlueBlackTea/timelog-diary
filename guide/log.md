@@ -17,3 +17,14 @@
 
 ## 2026-04-19 (DESIGNER) — 세션 2
 - T1-13 DailyFooter store 연동 — DayData에 review/tomorrow 추가, setReview/setTomorrow 액션 추가, DailyFooter.tsx textarea 연결
+
+## 2026-05-01 (DESIGNER)
+- guide 동기화: plan.md T1-15 체크 수정; status.md T1-10/T1-11 완료 반영 (코드 확인됨)
+- 레이아웃 정렬 버그 3건 수정:
+  - TimeTablePanel `border-l` → `md:border-l` (데스크톱 이중 구분선 제거)
+  - TimeTablePanel `<div className="py-1">` 래퍼 제거 (불필요한 오프셋)
+  - TimeTable 레이블 열 `pt-[5px]` 추가 ("00" 레이블 overflow-y 클리핑 해결)
+- T1-16 달력 뷰 구현:
+  - dailyStore.ts: Zustand `persist` 미들웨어 적용, `allDayTotals: Record<string, number>` 추가, recalcTotalMinutes에서 날짜별 합계 동기화
+  - DailyHeader.tsx: 달력 아이콘 버튼 추가 (우측 끝)
+  - CalendarModal.tsx 신규: 월 이동, 7×N 그리드, totalMinutes 기준 핑크 그라데이션 배경, 날짜 클릭 시 currentDate 변경

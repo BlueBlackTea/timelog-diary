@@ -64,7 +64,7 @@ export default function TimeTable() {
     <>
       <div className="flex select-none" style={{ height: TOTAL_SLOTS * SLOT_H }}>
         {/* 시간 레이블 */}
-        <div className="relative shrink-0 w-9">
+        <div className="relative shrink-0 w-9 pt-[5px]">
           {Array.from({ length: 25 }, (_, h) => (
             <div
               key={h}
