@@ -71,14 +71,12 @@ body {
 }
 
 /*
-  Task 패널 너비 — 모바일: 100%, md+: CSS 변수(--task-pct)로 동적 조절
-  page.tsx 의 드래그 핸들이 --task-pct 값을 갱신함
+  3열 레이아웃 (lg+) — flex-grow 비율로 너비 제어
+  page.tsx의 드래그 핸들이 --col-cal / --col-time / --col-task 값을 갱신
+  모바일에서는 flex-grow 미적용 (세로 스택 유지)
 */
-.task-panel-col {
-  width: 100%;
-}
-@media (min-width: 768px) {
-  .task-panel-col {
-    width: var(--task-pct, 66.67%);
-  }
+@media (min-width: 1024px) {
+  .col-calendar  { flex-grow: var(--col-cal,  50); flex-shrink: 1; flex-basis: 0; min-width: 0; }
+  .col-timetable { flex-grow: var(--col-time, 25); flex-shrink: 1; flex-basis: 0; min-width: 0; }
+  .col-tasks     { flex-grow: var(--col-task, 25); flex-shrink: 1; flex-basis: 0; min-width: 0; }
 }
