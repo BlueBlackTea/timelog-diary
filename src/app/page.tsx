@@ -1,46 +1,76 @@
+"use client";
+
+import { useState, useRef, useCallback } from "react";
 import DailyHeader from "@/components/layout/DailyHeader";
 import DailyFooter from "@/components/layout/DailyFooter";
 import TaskPanel from "@/components/layout/TaskPanel";
 import TimeTablePanel from "@/components/layout/TimeTablePanel";
 
-/**
- * 메인 데일리 페이지
- *
- * 레이아웃:
- *   ┌─────────────────────────────────────────────┐
- *   │  DailyHeader: 날짜 / 요일 / 코멘트 / 총시간   │
- *   ├──────────────────┬──────────────────────────┤
- *   │  TaskPanel (35%) │  TimeTablePanel (65%)    │
- *   ├──────────────────┴──────────────────────────┤
- *   │  DailyFooter: 메모 / 회고 / 내일포인트        │
- *   └─────────────────────────────────────────────┘
- */
-/**
- * 레이아웃 반응형 기준 (Tailwind md: 768px)
- *
- * 모바일  : 단일 컬럼 — Header / Tasks / Timetable / Footer 순 스크롤
- * md 이상 : 좌우 2단 고정 — Header / [Tasks 35% | Timetable 65%] / Footer
- */
+const MIN_TASK_PCT = 25;
+const MAX_TASK_PCT = 80;
+const DEFAULT_TASK_PCT = 66.67; // 화면 2/3
+
 export default function DailyPage() {
+  const [taskPct, setTaskPct] = useState(DEFAULT_TASK_PCT);
+  const containerRef = useRef<HTMLElement>(null);
+  const dragging = useRef(false);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    dragging.current = true;
+    document.body.style.cursor = "ew-resize";
+    document.body.style.userSelect = "none";
+
+    const onMove = (ev: MouseEvent) => {
+      if (!dragging.current || !containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const pct = ((ev.clientX - rect.left) / rect.width) * 100;
+      setTaskPct(Math.min(MAX_TASK_PCT, Math.max(MIN_TASK_PCT, pct)));
+    };
+
+    const onUp = () => {
+      dragging.current = false;
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen md:h-screen md:overflow-hidden bg-[var(--color-paper)]">
-      {/* 상단 */}
       <DailyHeader />
 
-      {/* 중단: 모바일=단일컬럼 / md+=좌우2단 */}
-      <main className="flex flex-col md:flex-row flex-1 md:overflow-hidden">
-        {/* Task 패널 — 모바일: 전체폭, md+: 35% */}
-        <div className="w-full md:w-[35%] md:min-w-[280px]">
+      {/* --task-pct CSS 변수를 main에 주입 → .task-panel-col 이 md+ 에서만 사용 */}
+      <main
+        ref={containerRef}
+        className="flex flex-col md:flex-row flex-1 md:overflow-hidden"
+        style={{ "--task-pct": `${taskPct}%` } as React.CSSProperties}
+      >
+        {/* Task 패널: 모바일=전체폭, md+=--task-pct */}
+        <div className="task-panel-col md:shrink-0 md:overflow-hidden">
           <TaskPanel />
         </div>
 
-        {/* 타임테이블 패널 — 모바일: 전체폭, md+: 나머지 */}
-        <div className="w-full md:flex-1">
+        {/* 드래그 핸들 (md+ 전용) */}
+        <div
+          className="hidden md:flex items-center justify-center shrink-0 cursor-ew-resize group"
+          style={{ width: 12 }}
+          onMouseDown={handleMouseDown}
+          title="드래그해서 너비 조절"
+        >
+          <div className="h-full w-px bg-[var(--color-line)] group-hover:bg-[var(--color-ink-muted)] transition-colors" />
+        </div>
+
+        {/* 타임테이블 패널: 나머지 공간 */}
+        <div className="flex-1 md:overflow-hidden">
           <TimeTablePanel />
         </div>
       </main>
 
-      {/* 하단 */}
       <DailyFooter />
     </div>
   );

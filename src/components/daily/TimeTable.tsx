@@ -87,17 +87,12 @@ export default function TimeTable() {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          {/* 수평 슬롯 구분선 (시간별 solid, 30분 dashed) */}
-          {Array.from({ length: TOTAL_SLOTS }, (_, i) => (
+          {/* 수평 구분선 — 시간(hour)마다 solid 선만 표시 */}
+          {Array.from({ length: 25 }, (_, h) => (
             <div
-              key={i}
+              key={h}
               className="absolute left-0 right-0 pointer-events-none"
-              style={{
-                top: i * SLOT_H,
-                borderTop: i % 2 === 0
-                  ? "1px solid var(--color-line)"
-                  : "1px dashed color-mix(in srgb, var(--color-line) 60%, transparent)",
-              }}
+              style={{ top: h * 2 * SLOT_H, borderTop: "1px solid var(--color-line)" }}
             />
           ))}
 

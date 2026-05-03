@@ -6,7 +6,7 @@ import TaskInput from "@/components/daily/TaskInput";
 
 export default function TaskPanel() {
   return (
-    <section className="relative flex flex-col border-b md:border-b-0 md:border-r border-[var(--color-line)] overflow-hidden h-[50vh] md:h-full">
+    <section className="relative flex flex-col border-b md:border-b-0 border-[var(--color-line)] overflow-hidden h-[50vh] md:h-full">
       {/* 패널 헤더 */}
       <div className="px-4 py-2 border-b border-[var(--color-line)] shrink-0">
         <span className="font-gothic text-[10px] font-bold tracking-widest text-[var(--color-ink-muted)] uppercase">

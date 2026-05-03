@@ -72,3 +72,16 @@ body {
 .border-paper {
   border-color: var(--color-line);
 }
+
+/*
+  Task 패널 너비 — 모바일: 100%, md+: CSS 변수(--task-pct)로 동적 조절
+  page.tsx 의 드래그 핸들이 --task-pct 값을 갱신함
+*/
+.task-panel-col {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .task-panel-col {
+    width: var(--task-pct, 66.67%);
+  }
+}
