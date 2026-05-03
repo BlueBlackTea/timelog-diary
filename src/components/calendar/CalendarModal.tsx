@@ -112,7 +112,7 @@ export default function CalendarModal({ onClose }: Props) {
                 style={{
                   backgroundColor:
                     intensity > 0
-                      ? `rgba(239, 164, 184, ${intensity * 0.75})`
+                      ? `rgba(255, 190, 190, ${intensity * 0.75})`
                       : undefined,
                   outline: isSelected ? "2px solid var(--color-ink)" : undefined,
                   outlineOffset: "-2px",

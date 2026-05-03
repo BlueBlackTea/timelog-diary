@@ -28,3 +28,21 @@
   - dailyStore.ts: Zustand `persist` 미들웨어 적용, `allDayTotals: Record<string, number>` 추가, recalcTotalMinutes에서 날짜별 합계 동기화
   - DailyHeader.tsx: 달력 아이콘 버튼 추가 (우측 끝)
   - CalendarModal.tsx 신규: 월 이동, 7×N 그리드, totalMinutes 기준 핑크 그라데이션 배경, 날짜 클릭 시 currentDate 변경
+
+## 2026-05-03 (DESIGNER)
+- 추가 UI 개선:
+  - page.tsx: Task 패널 기본 너비 2/3(66.67%), 드래그 핸들로 25~80% 조절 (CSS --task-pct 변수 + media query)
+  - TaskPanel.tsx: md:border-r 제거 (드래그 핸들이 구분선 역할)
+  - TimeTablePanel.tsx: 분 단위 컬럼 헤더 추가 (00·10·20·30·40·50), 10분 세로 구분선 5개
+  - TimeTable.tsx: 30분 대시선 제거 → 1시간 solid 선만 유지, 수직 컬럼 구분선 5개 추가
+  - TaskList.tsx: 빈 상태 텍스트 위치 규선에 맞도록 조정
+  - layout.tsx: Nanum_Pen_Script → School Bell (Google Fonts)로 영문 손글씨 폰트 교체
+  - globals.css: NanumDongHi @font-face 로컬 로드 추가, .font-handwriting 폰트 스택 구성
+  - public/fonts/NanumDongHi.ttf 추가 (한글 손글씨 폰트 파일)
+- 컬러 팔레트 전체 교체 (4색 시스템):
+  - --color-paper: #f7faf6 (Tea Green 극연화)
+  - --color-ink: #252323 (Shadow Grey)
+  - --color-ink-muted: #70798c (Slate Grey)
+  - --color-line: #cadbc0 (Tea Green)
+  - WORK_TYPE_COLORS: 업무 #FFBEBE / 회의 #C4C8DA / 공부 #FFEDB5 / 외근 #CADBC0 / 기타 #D4D3CE
+  - CalendarModal 그라데이션: rgba(239,164,184,…) → rgba(255,190,190,…)

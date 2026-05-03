@@ -5,11 +5,11 @@ import dayjs from "dayjs";
 export type WorkType = "회의" | "업무" | "공부" | "외근" | "기타";
 
 export const WORK_TYPE_COLORS: Record<WorkType, string> = {
-  업무: "#EFA4B8",
-  회의: "#AFA9EC",
-  공부: "#FFE600",
-  외근: "#5DCAA5",
-  기타: "#D3D1C7",
+  업무: "#FFBEBE",
+  회의: "#C4C8DA",
+  공부: "#FFEDB5",
+  외근: "#CADBC0",
+  기타: "#D4D3CE",
 };
 
 export interface Task {
