@@ -54,6 +54,9 @@
 - TaskInput: taskName 유지 정책 — 같은 업무명으로 내용만 다르게 추가할 때 taskName 초기화 안 함
 - T1-15(색상 배정): workType → WORK_TYPE_COLORS 자동 매핑. 커스텀 색상 선택 UI는 미구현
 - T1-16(달력 뷰): Zustand persist(localStorage) + allDayTotals 기반. Phase 2에서 Supabase로 대체 예정
+- 레이아웃 패널 리사이즈: CSS `--task-pct` 변수를 `<main>` style에 주입 → `.task-panel-col` 클래스가 `@media (min-width:768px)`에서만 해당 변수 사용. 드래그 핸들(width:12px) 범위 25~80%, 기본 66.67%
+- 폰트 스택: 한글 손글씨 = `NanumDongHi` (public/fonts/NanumDongHi.ttf), 영문 손글씨 = `School Bell` (Google Fonts), 고딕 = `Noto Sans KR`. 파일 없어도 빌드 정상 동작
+- 컬러 팔레트 (5색): ink=#586994(Baltic Blue), ink-muted=#7D869C(Lavender Grey), line=#CADBC0(Tea Green), 업무=#FFBEBE, 회의=#586994, 공부=#7D869C, 외근=#69995D, 기타=#CADBC0
 
 ---
 

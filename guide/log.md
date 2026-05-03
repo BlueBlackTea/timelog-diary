@@ -39,10 +39,10 @@
   - layout.tsx: Nanum_Pen_Script → School Bell (Google Fonts)로 영문 손글씨 폰트 교체
   - globals.css: NanumDongHi @font-face 로컬 로드 추가, .font-handwriting 폰트 스택 구성
   - public/fonts/NanumDongHi.ttf 추가 (한글 손글씨 폰트 파일)
-- 컬러 팔레트 전체 교체 (4색 시스템):
-  - --color-paper: #f7faf6 (Tea Green 극연화)
-  - --color-ink: #252323 (Shadow Grey)
-  - --color-ink-muted: #70798c (Slate Grey)
+- 컬러 팔레트 전체 교체 (5색 시스템):
+  - --color-paper: #fafaf8
+  - --color-ink: #586994 (Baltic Blue)
+  - --color-ink-muted: #7d869c (Lavender Grey)
   - --color-line: #cadbc0 (Tea Green)
-  - WORK_TYPE_COLORS: 업무 #FFBEBE / 회의 #C4C8DA / 공부 #FFEDB5 / 외근 #CADBC0 / 기타 #D4D3CE
-  - CalendarModal 그라데이션: rgba(239,164,184,…) → rgba(255,190,190,…)
+  - WORK_TYPE_COLORS: 업무 #FFBEBE / 회의 #586994 / 공부 #7D869C / 외근 #69995D / 기타 #CADBC0
+  - CalendarModal 그라데이션: rgba(255,190,190,…) (Powder Blush 기반)

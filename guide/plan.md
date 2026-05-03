@@ -204,10 +204,9 @@ Google Drive
 - 줄 노트 배경선 반복 적용
 
 ### 폰트
-- 날짜 / 숫자 강조: 고딕 계열 굵게
-- 본문 / Task 항목: 한글 손글씨체
-  - 권장 후보: Nanum Pen Script, Gaegu (Google Fonts 무료)
-- 영문 보조: 세리프 또는 모노 계열
+- 날짜 / 숫자 강조: Noto Sans KR (고딕, Google Fonts) — `.font-gothic`
+- 본문 / Task 항목: 나눔손글씨 노력하는 동희 (로컬, `public/fonts/NanumDongHi.ttf`) + School Bell (영문, Google Fonts) — `.font-handwriting`
+- 폰트 스택: `"NanumDongHi", var(--font-school-bell), cursive`
 
 ### 색상 체계
 
@@ -216,11 +215,20 @@ Google Drive
 
 | 업무유형 | 형광펜 색상 |
 |------|------|
-| 업무 | #EFA4B8 (핑크) |
-| 회의 | #AFA9EC (라일락) |
-| 공부 | #FFE600 (노랑) |
-| 외근 | #5DCAA5 (민트) |
-| 기타 | #D3D1C7 (그레이) |
+| 업무 | #FFBEBE (Powder Blush) |
+| 회의 | #586994 (Baltic Blue) |
+| 공부 | #7D869C (Lavender Grey) |
+| 외근 | #69995D (Sage Green) |
+| 기타 | #CADBC0 (Tea Green) |
+
+**앱 테마 팔레트**
+
+| 변수 | 값 | 용도 |
+|------|------|------|
+| `--color-paper` | #FAFAF8 | 배경 |
+| `--color-ink` | #586994 (Baltic Blue) | 본문 글씨 |
+| `--color-ink-muted` | #7D869C (Lavender Grey) | 보조 글씨 |
+| `--color-line` | #CADBC0 (Tea Green) | 줄선·테두리 |
 
 ---
 
