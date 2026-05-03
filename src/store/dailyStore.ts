@@ -6,10 +6,10 @@ export type WorkType = "회의" | "업무" | "공부" | "외근" | "기타";
 
 export const WORK_TYPE_COLORS: Record<WorkType, string> = {
   업무: "#FFBEBE",
-  회의: "#C4C8DA",
-  공부: "#FFEDB5",
-  외근: "#CADBC0",
-  기타: "#D4D3CE",
+  회의: "#586994",
+  공부: "#7D869C",
+  외근: "#69995D",
+  기타: "#CADBC0",
 };
 
 export interface Task {

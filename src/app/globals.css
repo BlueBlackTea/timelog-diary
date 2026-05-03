@@ -19,18 +19,18 @@
   --font-gothic: var(--font-gothic);
 
   /* 페이퍼 색상 */
-  --color-paper: #f7faf6;
-  --color-paper-dark: #ebf0e9;
-  --color-ink: #252323;
-  --color-ink-muted: #70798c;
+  --color-paper: #fafaf8;
+  --color-paper-dark: #f0f2ef;
+  --color-ink: #586994;
+  --color-ink-muted: #7d869c;
   --color-line: #cadbc0;
 
   /* 업무유형 형광펜 색상 */
   --color-work-task: #ffbebe;
-  --color-work-meeting: #c4c8da;
-  --color-work-study: #ffedb5;
-  --color-work-outside: #cadbc0;
-  --color-work-etc: #d4d3ce;
+  --color-work-meeting: #586994;
+  --color-work-study: #7d869c;
+  --color-work-outside: #69995d;
+  --color-work-etc: #cadbc0;
 
   /* 줄 간격 */
   --line-height-ruled: 28px;
