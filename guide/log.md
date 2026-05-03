@@ -53,3 +53,8 @@
   - --color-ink-muted: #7d869c → #787878 (내추럴 미디엄 그레이 — 보조 텍스트 전용)
   - --color-work-meeting: #586994 / --color-work-study: #7d869c 유지 (Chip/Highlighter 전용)
   - 모든 컴포넌트가 CSS 변수 참조하므로 추가 변경 없이 전체 반영
+- 빌드 오류 수정 (GitHub Pages 배포 복구):
+  - layout.tsx: School_Bell → Caveat (Turbopack "Unknown font" 에러 원인 제거)
+  - layout.tsx: NanumDongHi next/font/local 전환 (public/fonts → src/fonts, basePath 자동 처리)
+  - globals.css: @font-face 제거, --font-school-bell → --font-caveat, --font-nanum-donghi 추가
+  - src/fonts/NanumDongHi.ttf 추가 (next/font/local 소스)
