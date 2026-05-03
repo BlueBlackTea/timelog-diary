@@ -89,7 +89,7 @@ export default function TaskList() {
 
   if (tasks.length === 0) {
     return (
-      <p className="px-4 py-3 font-handwriting text-base text-[var(--color-line)]">
+      <p className="px-3 pt-[5px] pb-0 font-handwriting text-base leading-7 text-[var(--color-line)]">
         오늘의 업무를 추가하세요.
       </p>
     );
