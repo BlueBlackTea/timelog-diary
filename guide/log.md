@@ -46,3 +46,10 @@
   - --color-line: #cadbc0 (Tea Green)
   - WORK_TYPE_COLORS: 업무 #FFBEBE / 회의 #586994 / 공부 #7D869C / 외근 #69995D / 기타 #CADBC0
   - CalendarModal 그라데이션: rgba(255,190,190,…) (Powder Blush 기반)
+
+## 2026-05-03 (DESIGNER) — 세션 2
+- 텍스트 색상 팔레트 분리 (globals.css):
+  - --color-ink: #586994 → #2c2c2c (내추럴 다크 차콜 — 텍스트 전용)
+  - --color-ink-muted: #7d869c → #787878 (내추럴 미디엄 그레이 — 보조 텍스트 전용)
+  - --color-work-meeting: #586994 / --color-work-study: #7d869c 유지 (Chip/Highlighter 전용)
+  - 모든 컴포넌트가 CSS 변수 참조하므로 추가 변경 없이 전체 반영

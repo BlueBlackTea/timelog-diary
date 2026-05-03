@@ -56,7 +56,8 @@
 - T1-16(달력 뷰): Zustand persist(localStorage) + allDayTotals 기반. Phase 2에서 Supabase로 대체 예정
 - 레이아웃 패널 리사이즈: CSS `--task-pct` 변수를 `<main>` style에 주입 → `.task-panel-col` 클래스가 `@media (min-width:768px)`에서만 해당 변수 사용. 드래그 핸들(width:12px) 범위 25~80%, 기본 66.67%
 - 폰트 스택: 한글 손글씨 = `NanumDongHi` (public/fonts/NanumDongHi.ttf), 영문 손글씨 = `School Bell` (Google Fonts), 고딕 = `Noto Sans KR`. 파일 없어도 빌드 정상 동작
-- 컬러 팔레트 (5색): ink=#586994(Baltic Blue), ink-muted=#7D869C(Lavender Grey), line=#CADBC0(Tea Green), 업무=#FFBEBE, 회의=#586994, 공부=#7D869C, 외근=#69995D, 기타=#CADBC0
+- 컬러 팔레트 (5색): 업무=#FFBEBE, 회의=#586994, 공부=#7D869C, 외근=#69995D, 기타=#CADBC0
+- 텍스트 색상 (팔레트와 분리): ink=#2C2C2C(내추럴 다크 차콜), ink-muted=#787878(내추럴 그레이), line=#CADBC0(Tea Green 경계선)
 
 ---
 
