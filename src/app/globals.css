@@ -1,21 +1,9 @@
 @import "tailwindcss";
 
-/*
-  나눔손글씨 노력하는 동희 — 로컬 파일 로드
-  파일을 public/fonts/NanumDongHi.ttf 에 놓으면 자동 적용됨.
-  파일이 없어도 빌드는 정상 동작하며, 아래 fallback 폰트가 사용됨.
-*/
-@font-face {
-  font-family: "NanumDongHi";
-  src: url("/fonts/NanumDongHi.ttf") format("truetype");
-  font-display: swap;
-  font-weight: 400;
-  font-style: normal;
-}
-
 @theme inline {
-  /* 폰트 */
-  --font-school-bell: var(--font-school-bell);
+  /* 폰트 — next/font가 주입하는 CSS 변수 참조 */
+  --font-nanum-donghi: var(--font-nanum-donghi);
+  --font-caveat: var(--font-caveat);
   --font-gothic: var(--font-gothic);
 
   /* 페이퍼 색상 */
@@ -44,12 +32,12 @@ body {
 
 /*
   손글씨 폰트 스택:
-  1순위: NanumDongHi (한글 담당 — public/fonts/NanumDongHi.ttf 필요)
-  2순위: School Bell  (영문 담당 — Google Fonts 자동 로드)
+  1순위: NanumDongHi (한글 — next/font/local, basePath 자동 처리)
+  2순위: Caveat       (영문 — Google Fonts)
   3순위: cursive      (최종 fallback)
 */
 .font-handwriting {
-  font-family: "NanumDongHi", var(--font-school-bell), cursive;
+  font-family: var(--font-nanum-donghi), var(--font-caveat), cursive;
 }
 
 .font-gothic {
