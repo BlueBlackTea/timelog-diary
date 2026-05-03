@@ -23,6 +23,9 @@ function posToSlot(y: number, rect: DOMRect) {
   return Math.max(0, Math.min(TOTAL_SLOTS - 1, Math.floor(relY / SLOT_H)));
 }
 
+// 10분 단위 세로 구분선 위치 (1/6 ~ 5/6)
+const COL_LINES = [1, 2, 3, 4, 5];
+
 export default function TimeTable() {
   const { timeBlocks, addTimeBlock, currentDate } = useDailyStore();
 
@@ -31,7 +34,6 @@ export default function TimeTable() {
   const [dragEnd, setDragEnd] = useState<number | null>(null);
   const [popup, setPopup] = useState<{ start: string; end: string } | null>(null);
 
-  // 드래그 범위 정규화 (위→아래 방향 보정)
   const previewStart = dragStart !== null && dragEnd !== null ? Math.min(dragStart, dragEnd) : null;
   const previewEnd = dragStart !== null && dragEnd !== null ? Math.max(dragStart, dragEnd) + 1 : null;
 
@@ -63,13 +65,13 @@ export default function TimeTable() {
   return (
     <>
       <div className="flex select-none" style={{ height: TOTAL_SLOTS * SLOT_H }}>
-        {/* 시간 레이블 */}
-        <div className="relative shrink-0 w-9 pt-[5px]">
+        {/* 시간 레이블 — h=0은 top:1 로 상단선에 맞춤, 나머지는 시간선 중앙 정렬 */}
+        <div className="relative shrink-0 w-9">
           {Array.from({ length: 25 }, (_, h) => (
             <div
               key={h}
               className="absolute right-1.5 font-gothic text-[9px] leading-none text-[var(--color-ink-muted)]"
-              style={{ top: h * 2 * SLOT_H - 5 }}
+              style={{ top: h === 0 ? 1 : h * 2 * SLOT_H - 5 }}
             >
               {String(h).padStart(2, "0")}
             </div>
@@ -85,7 +87,7 @@ export default function TimeTable() {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          {/* 슬롯 구분선 */}
+          {/* 수평 슬롯 구분선 (시간별 solid, 30분 dashed) */}
           {Array.from({ length: TOTAL_SLOTS }, (_, i) => (
             <div
               key={i}
@@ -140,6 +142,19 @@ export default function TimeTable() {
               </div>
             );
           })}
+
+          {/* 10분 단위 수직 컬럼 구분선 — 타임블록 위에 렌더링 */}
+          {COL_LINES.map((i) => (
+            <div
+              key={`vcol-${i}`}
+              className="absolute top-0 bottom-0 pointer-events-none"
+              style={{
+                left: `${(i / 6) * 100}%`,
+                width: "1px",
+                background: "color-mix(in srgb, var(--color-line) 55%, transparent)",
+              }}
+            />
+          ))}
         </div>
       </div>
 
