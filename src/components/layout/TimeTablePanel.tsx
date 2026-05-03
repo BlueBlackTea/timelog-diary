@@ -37,7 +37,7 @@ export default function TimeTablePanel() {
       </div>
 
       {/* 타임테이블 본문 */}
-      <div className="flex-1 overflow-y-auto bg-[var(--color-paper)]">
+      <div className="flex-1 overflow-y-auto bg-[var(--color-paper)]" style={{ scrollbarGutter: "stable" }}>
         <TimeTable />
       </div>
     </section>
