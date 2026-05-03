@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import TimeTable, { type DrawMode, groupPaintedCells } from "@/components/daily/TimeTable";
+import { useState, useRef, useEffect } from "react";
+import TimeTable, { type DrawMode, groupPaintedCells, ROW_H } from "@/components/daily/TimeTable";
 import DrawSavePopup from "@/components/ui/DrawSavePopup";
 
 const MIN_LABELS = ["00", "10", "20", "30", "40", "50"];
@@ -30,6 +30,14 @@ export default function TimeTablePanel() {
     setPaintedCells(new Set());
     setMode("view");
   }
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = 8 * ROW_H;
+    }
+  }, []);
 
   const isDrawing = mode !== "view";
   const canSave = isDrawing && paintedCells.size > 0;
@@ -112,6 +120,7 @@ export default function TimeTablePanel() {
 
       {/* 타임테이블 본문 (sticky 헤더 포함) */}
       <div
+        ref={scrollRef}
         className="flex-1 overflow-y-auto bg-[var(--color-paper)]"
         style={{ scrollbarGutter: "stable" }}
       >

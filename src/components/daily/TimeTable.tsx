@@ -14,11 +14,11 @@ import Highlighter from "@/components/ui/Highlighter";
  *   (양 끝 진하게 + 가운데 연하게 + feTurbulence 번짐 — Highlighter.tsx 동일 효과)
  */
 
-const ROW_H   = 44;   // px per hour row
-const LABEL_W = 36;   // px, 시간 레이블 열 너비 (w-9)
-const COLS    = 6;    // 10분 단위 열 수
-const HL_H    = 20;   // Highlighter 높이 (px), Highlighter.tsx HEIGHT와 동일
-const HL_TOP  = (ROW_H - HL_H) / 2; // 행 내 세로 중앙 오프셋
+export const ROW_H = 24;   // px per hour row (형광펜이 딱 들어가는 높이)
+const LABEL_W = 36;        // px, 시간 레이블 열 너비 (w-9)
+const COLS    = 6;         // 10분 단위 열 수
+const HL_H    = 20;        // Highlighter 높이 (px)
+const HL_TOP  = Math.max(0, (ROW_H - HL_H) / 2); // 행 내 세로 중앙
 
 const DRAW_COLOR  = "#69995D"; // 드로우 하이라이트 색 (외근 Sage Green)
 const ERASE_COLOR = "#C85050"; // 지우개 표시 색
