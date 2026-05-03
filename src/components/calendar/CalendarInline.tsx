@@ -65,65 +65,76 @@ export default function CalendarInline() {
         </button>
       </div>
 
-      {/* 달력 그리드 */}
-      <div className="flex-1 overflow-y-auto px-3 py-2">
-        {/* 요일 헤더 */}
-        <div className="grid grid-cols-7 pb-1">
-          {DOW_LABELS.map((d) => (
-            <div
-              key={d}
-              className="text-center font-gothic text-[9px] font-bold tracking-widest text-[var(--color-ink-muted)]"
-            >
-              {d}
-            </div>
-          ))}
-        </div>
+      {/* 달력 그리드
+          - max-w-[560px] mx-auto: 공간이 넉넉하면 좌우 여백 생성, 정방형 유지
+          - aspect-square on each cell: 너비=높이 항상 유지
+          - 패널이 너무 좁으면 셀이 작아지되 정방형 유지 (lg 미만은 hidden 처리)
+      */}
+      <div className="flex-1 overflow-y-auto py-3">
+        <div className="mx-auto w-full max-w-[560px] px-3">
+          {/* DOW 레이블 + 날짜 셀을 단일 grid로 → 열 정렬 완벽 일치 */}
+          <div className="grid grid-cols-7">
 
-        {/* 날짜 그리드 */}
-        <div className="grid grid-cols-7 gap-px">
-          {Array.from({ length: totalCells }, (_, i) => {
-            const dayNum = i - startPad + 1;
-            if (dayNum < 1 || dayNum > daysInMonth) {
-              return <div key={i} className="min-h-[38px]" />;
-            }
-
-            const date      = viewMonth.date(dayNum).format("YYYY-MM-DD");
-            const minutes   = allDayTotals[date] ?? 0;
-            const intensity = getIntensity(minutes);
-            const isToday   = date === today;
-            const isSelected = date === currentDate;
-
-            return (
-              <button
-                key={date}
-                onClick={() => setCurrentDate(date)}
-                className="relative flex flex-col items-center justify-start py-1 rounded-sm transition-opacity hover:opacity-80 min-h-[38px]"
-                style={{
-                  backgroundColor: intensity > 0
-                    ? `rgba(255, 190, 190, ${intensity * 0.75})`
-                    : undefined,
-                  outline: isSelected ? "2px solid var(--color-ink)" : undefined,
-                  outlineOffset: "-2px",
-                }}
+            {/* 요일 헤더 행 */}
+            {DOW_LABELS.map((d) => (
+              <div
+                key={d}
+                className="flex items-center justify-center pb-1
+                           font-gothic text-[9px] font-bold tracking-widest
+                           text-[var(--color-ink-muted)]"
               >
-                <span
-                  className="font-gothic text-[10px] font-bold leading-none"
+                {d}
+              </div>
+            ))}
+
+            {/* 날짜 셀 — aspect-square로 정방형 강제 */}
+            {Array.from({ length: totalCells }, (_, i) => {
+              const dayNum = i - startPad + 1;
+
+              /* 빈 셀도 aspect-square로 공간 확보 */
+              if (dayNum < 1 || dayNum > daysInMonth) {
+                return <div key={i} className="aspect-square" />;
+              }
+
+              const date       = viewMonth.date(dayNum).format("YYYY-MM-DD");
+              const minutes    = allDayTotals[date] ?? 0;
+              const intensity  = getIntensity(minutes);
+              const isToday    = date === today;
+              const isSelected = date === currentDate;
+
+              return (
+                <button
+                  key={date}
+                  onClick={() => setCurrentDate(date)}
+                  className="aspect-square flex flex-col items-center justify-center
+                             rounded-sm transition-opacity hover:opacity-75 gap-0.5"
                   style={{
-                    color: isToday ? "var(--color-ink)" : "var(--color-ink-muted)",
-                    textDecoration: isToday ? "underline" : undefined,
-                    textUnderlineOffset: "2px",
+                    backgroundColor: intensity > 0
+                      ? `rgba(255, 190, 190, ${intensity * 0.75})`
+                      : undefined,
+                    outline:       isSelected ? "2px solid var(--color-ink)" : undefined,
+                    outlineOffset: isSelected ? "-2px" : undefined,
                   }}
                 >
-                  {dayNum}
-                </span>
-                {minutes > 0 && (
-                  <span className="mt-0.5 font-gothic text-[8px] leading-none text-[var(--color-ink)] font-bold">
-                    {formatMinutes(minutes)}
+                  <span
+                    className="font-gothic text-[11px] font-bold leading-none"
+                    style={{
+                      color:          isToday ? "var(--color-ink)" : "var(--color-ink-muted)",
+                      textDecoration: isToday ? "underline" : undefined,
+                      textUnderlineOffset: "2px",
+                    }}
+                  >
+                    {dayNum}
                   </span>
-                )}
-              </button>
-            );
-          })}
+                  {minutes > 0 && (
+                    <span className="font-gothic text-[8px] leading-none text-[var(--color-ink)] font-bold">
+                      {formatMinutes(minutes)}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
