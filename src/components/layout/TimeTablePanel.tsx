@@ -43,7 +43,7 @@ export default function TimeTablePanel() {
   const canSave = isDrawing && paintedCells.size > 0;
 
   return (
-    <section className="relative flex flex-col overflow-hidden h-[60vh] md:h-full md:border-l border-[var(--color-line)]">
+    <section className="relative flex flex-col overflow-hidden h-[60vh] lg:h-full">
       {/* 패널 헤더 */}
       <div className="px-4 py-2 border-b border-[var(--color-line)] shrink-0 flex items-center justify-between">
         <span className="font-gothic text-[10px] font-bold tracking-widest text-[var(--color-ink-muted)] uppercase">
@@ -52,38 +52,39 @@ export default function TimeTablePanel() {
 
         {/* 드로우 모드 버튼 */}
         <div className="flex items-center gap-1">
-          {/* 그리기 버튼 */}
+          {/* 연필 버튼 — 수정모드 토글 */}
           <button
             onClick={() => toggleMode("draw")}
-            title="그리기"
+            title={isDrawing ? "수정 종료" : "그리기"}
             className="p-1 rounded transition-colors"
             style={{
-              color: mode === "draw" ? "var(--color-ink)" : "var(--color-ink-muted)",
-              backgroundColor: mode === "draw" ? "var(--color-paper-dark)" : "transparent",
+              color: isDrawing ? "var(--color-ink)" : "var(--color-ink-muted)",
+              backgroundColor: isDrawing ? "var(--color-paper-dark)" : "transparent",
             }}
           >
-            {/* 연필 아이콘 */}
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9.5 1.5l2 2L4 11H2v-2L9.5 1.5z" />
             </svg>
           </button>
 
-          {/* 지우개 버튼 */}
-          <button
-            onClick={() => toggleMode("erase")}
-            title="지우개"
-            className="p-1 rounded transition-colors"
-            style={{
-              color: mode === "erase" ? "var(--color-ink)" : "var(--color-ink-muted)",
-              backgroundColor: mode === "erase" ? "var(--color-paper-dark)" : "transparent",
-            }}
-          >
-            {/* 지우개 아이콘 */}
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M2 10h9" />
-              <path d="M7 2l4 4-5 5H2L6 7z" />
-            </svg>
-          </button>
+          {/* 지우개 버튼 — 수정모드일 때만 표시 */}
+          {isDrawing && (
+            <button
+              onClick={() => toggleMode("erase")}
+              title="지우개"
+              className="p-1 rounded transition-colors"
+              style={{
+                color: mode === "erase" ? "var(--color-ink)" : "var(--color-ink-muted)",
+                backgroundColor: mode === "erase" ? "var(--color-paper-dark)" : "transparent",
+              }}
+            >
+              {/* 지우개 아이콘 — 사각 고무지우개 형태 */}
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2 9L5 4L11 6.5L8 11.5H3.5L2 9Z" />
+                <line x1="1.5" y1="12" x2="11.5" y2="12" />
+              </svg>
+            </button>
+          )}
 
           {/* 저장 버튼 (칠한 셀 있을 때만 활성) */}
           {isDrawing && (

@@ -58,10 +58,10 @@ export default function DailyHeader() {
           className="flex-1 font-handwriting text-xl bg-transparent border-none outline-none text-[var(--color-ink)] placeholder:text-[var(--color-line)] caret-[var(--color-ink-muted)]"
         />
 
-        {/* 달력 버튼 */}
+        {/* 달력 버튼 — 사이드바가 없는 좁은 화면에서만 표시 */}
         <button
           onClick={() => setCalendarOpen(true)}
-          className="shrink-0 p-1.5 rounded-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-paper-dark)] transition-colors"
+          className="lg:hidden shrink-0 p-1.5 rounded-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-paper-dark)] transition-colors"
           aria-label="달력 열기"
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
