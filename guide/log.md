@@ -58,3 +58,26 @@
   - layout.tsx: NanumDongHi next/font/local 전환 (public/fonts → src/fonts, basePath 자동 처리)
   - globals.css: @font-face 제거, --font-school-bell → --font-caveat, --font-nanum-donghi 추가
   - src/fonts/NanumDongHi.ttf 추가 (next/font/local 소스)
+
+## 2026-05-03 (DESIGNER) — 세션 3
+- 포커스 타이머 단위 변경 (TaskList.tsx):
+  - ▶ 버튼 위치: TaskNameRow(업무명 그룹) → DetailRow(detail 항목, task.id 단위)
+  - isRunning 판단: activeTimer?.taskName → activeTimer?.taskId === task.id
+  - label 내부 버튼이므로 e.preventDefault() + e.stopPropagation() 처리
+- 타임테이블 전면 재설계 (TimeTable.tsx):
+  - 구조 변경: 세로 연속 타임라인(48슬롯×22px) → 행=시(hour)×열=10분 수평 그리드 (24행×6열)
+  - 블록 렌더링: 분/60 × 행너비 = 픽셀 위치 (1분 단위, 3분=한칸3/10 너비)
+  - 시간 경계 넘는 블록 자동 분할 (blockToSegments: 행별 세그먼트로 분해)
+  - 드로우/지우개 모드: pointer events + data-cell 속성 기반 10분 셀 그리기
+  - TimeBlock 삭제 버튼 추가 (view 모드 hover 시 × 표시)
+  - 업무명 font-handwriting 적용
+  - groupPaintedCells 유틸 export (연속 셀 → 시간 구간 배열)
+- 타임테이블 패널 개선 (TimeTablePanel.tsx):
+  - 분 레이블 헤더를 scroll 컨테이너 내부 sticky로 이동 → 열 정렬 불일치 수정
+  - 드로우 모드 상태(mode: view/draw/erase) + paintedCells Set 관리
+  - 그리기·지우개·저장·초기화 버튼 패널 헤더에 추가
+  - DrawSavePopup 연동
+- DrawSavePopup 신규 (src/components/ui/DrawSavePopup.tsx):
+  - 그린 셀 → 연속 구간 변환 후 구간별 start/end 1분 단위 편집 가능 (type="time")
+  - 총합 시간 표시, 태스크 드롭다운 선택
+  - 저장 시 구간별 addTimeBlock 호출 → paintedCells 초기화 + mode="view" 복귀

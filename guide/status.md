@@ -26,9 +26,9 @@
 
 ## 현재 상태
 
-**1단계 UI 구현 완료 — 16/16 완료**
+**1단계 UI 구현 완료 — 16/16 완료 + 추가 기능 구현**
 
-마지막 작업: DESIGNER (2026-05-03)
+마지막 작업: DESIGNER (2026-05-03, 세션 3)
 
 ### 1단계 티켓 현황
 - [x] T1-01 Next.js 프로젝트 초기 세팅
@@ -59,6 +59,10 @@
 - GitHub Pages 빌드: School_Bell Turbopack 미지원으로 Caveat으로 교체, NanumDongHi next/font/local 전환으로 basePath 경로 문제 해결
 - 컬러 팔레트 (5색): 업무=#FFBEBE, 회의=#586994, 공부=#7D869C, 외근=#69995D, 기타=#CADBC0
 - 텍스트 색상 (팔레트와 분리): ink=#2C2C2C(내추럴 다크 차콜), ink-muted=#787878(내추럴 그레이), line=#CADBC0(Tea Green 경계선)
+- 포커스 타이머: detail 항목(task.id) 단위로 기록. 실행 중 항목 펄스 원 표시
+- 타임테이블: 행=시(hour)×열=10분 수평 그리드. 블록은 1분 단위 가로 위치. 시간 경계 넘으면 다음 행 이어짐
+- 드로우 모드: 연필/지우개/저장/초기화 버튼. 10분 셀 pointer events 그리기. 저장 시 DrawSavePopup에서 1분 단위 편집 후 TimeBlock 생성
+- 타임테이블 열 정렬: 분 레이블 헤더를 scroll 컨테이너 내부 sticky로 배치하여 정렬 수정
 
 ---
 
