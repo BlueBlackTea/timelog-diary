@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Nanum_Pen_Script, Noto_Sans_KR } from "next/font/google";
+import { School_Bell, Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 
-// 손글씨 한글 폰트 — Task 항목, 본문
-const nanumPen = Nanum_Pen_Script({
+// 영문 손글씨 폰트 (Google Fonts)
+const schoolBell = School_Bell({
   weight: ["400"],
   subsets: ["latin"],
-  variable: "--font-handwriting",
+  variable: "--font-school-bell",
   display: "swap",
 });
 
@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${nanumPen.variable} ${notoSansKR.variable} h-full`}
+      className={`${schoolBell.variable} ${notoSansKR.variable} h-full`}
     >
       <body className="min-h-full bg-paper text-ink font-gothic antialiased">
         {children}
