@@ -1,17 +1,8 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import { Schoolbell, Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 
-// 한글 손글씨 폰트 — NanumDongHi (로컬)
-const nanumDongHi = localFont({
-  src: "../fonts/NanumDongHi.ttf",
-  variable: "--font-nanum-donghi",
-  display: "swap",
-  weight: "400",
-});
-
-// 영문 손글씨 폰트 — Schoolbell (Google Fonts, 정식명 "Schoolbell" 한 단어)
+// 영문 손글씨 폰트 — Schoolbell (Google Fonts)
 const schoolbell = Schoolbell({
   weight: ["400"],
   subsets: ["latin"],
@@ -38,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${nanumDongHi.variable} ${schoolbell.variable} ${notoSansKR.variable} h-full`}
+      className={`${schoolbell.variable} ${notoSansKR.variable} h-full`}
     >
       <body className="min-h-full bg-paper text-ink font-gothic antialiased">
         {children}
