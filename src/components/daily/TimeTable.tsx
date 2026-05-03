@@ -163,13 +163,6 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
   // 툴팁 상태
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
 
-  // 툴팁 외부 클릭 시 닫기
-  useEffect(() => {
-    function close() { setTooltip(null); }
-    document.addEventListener("click", close);
-    return () => document.removeEventListener("click", close);
-  }, []);
-
   useEffect(() => {
     if (!gridRef.current) return;
     const ro = new ResizeObserver(([entry]) => {
@@ -355,13 +348,15 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
                 pointerEvents: mode === "view" ? "auto" : "none",
                 cursor: mode === "view" ? "pointer" : "default",
               }}
-              onClick={(e) => {
+              onMouseEnter={(e) => {
                 if (mode !== "view") return;
-                e.stopPropagation();
-                setTooltip((prev) =>
-                  prev?.block.id === seg.block.id ? null : { block: seg.block, x: e.clientX, y: e.clientY }
-                );
+                setTooltip({ block: seg.block, x: e.clientX, y: e.clientY });
               }}
+              onMouseMove={(e) => {
+                if (mode !== "view") return;
+                setTooltip({ block: seg.block, x: e.clientX, y: e.clientY });
+              }}
+              onMouseLeave={() => setTooltip(null)}
             >
               {/* 형광펜 SVG */}
               {segPixelW > 0 && (
@@ -404,7 +399,6 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
             left: Math.min(tooltip.x + 14, (typeof window !== "undefined" ? window.innerWidth : 600) - 230),
             top:  Math.min(tooltip.y + 14, (typeof window !== "undefined" ? window.innerHeight : 800) - 170),
           }}
-          onClick={(e) => e.stopPropagation()}
         >
           {/* 업무유형 뱃지 */}
           <div className="flex items-center gap-1.5 mb-1">
