@@ -142,7 +142,7 @@ export default function TaskInput() {
           onKeyDown={(e) => {
             if (e.key === "Enter") { e.preventDefault(); handleSubmit(e as unknown as React.FormEvent); }
           }}
-          placeholder={isExistingName ? "내용 추가" : "내용 (선택)"}
+          placeholder={isExistingName ? "내용 추가" : "내용"}
           className="flex-1 font-handwriting text-base bg-transparent border-b border-[var(--color-line)] outline-none text-[var(--color-ink)] placeholder:text-[var(--color-line)] pb-0.5"
         />
 

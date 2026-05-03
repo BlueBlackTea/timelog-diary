@@ -10,13 +10,6 @@ interface Props {
   onClose: () => void;
 }
 
-// "HH:MM" + 분 수치 → "HH:MM"
-function addMinutes(time: string, delta: number): string {
-  const [h, m] = time.split(":").map(Number);
-  const total = Math.max(0, Math.min(24 * 60, h * 60 + m + delta));
-  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
-}
-
 function diffMinutes(start: string, end: string): number {
   const [sh, sm] = start.split(":").map(Number);
   const [eh, em] = end.split(":").map(Number);
@@ -31,14 +24,14 @@ function formatDuration(minutes: number): string {
 }
 
 export default function DrawSavePopup({ ranges, onSave, onClose }: Props) {
-  const { taskMasters, addTimeBlock, currentDate } = useDailyStore();
+  const { tasks, addTimeBlock, currentDate } = useDailyStore();
 
-  // 각 구간별 편집 상태 (start/end 텍스트 편집 가능)
   const [editedRanges, setEditedRanges] = useState<CellRange[]>(() =>
     ranges.map((r) => ({ ...r }))
   );
-  const [selectedMasterId, setSelectedMasterId] = useState<string>(
-    taskMasters[0]?.id ?? ""
+  // 오늘의 task.id 단위로 선택
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(
+    tasks.length > 0 ? tasks[0].id : null
   );
 
   const totalMinutes = useMemo(
@@ -46,7 +39,18 @@ export default function DrawSavePopup({ ranges, onSave, onClose }: Props) {
     [editedRanges]
   );
 
-  const selectedMaster = taskMasters.find((m) => m.id === selectedMasterId);
+  const selectedTask = tasks.find((t) => t.id === selectedTaskId);
+
+  // taskName 기준 그룹핑 (TimeBlockPopup과 동일 패턴)
+  const groupOrder: string[] = [];
+  const groups: Record<string, typeof tasks> = {};
+  for (const task of tasks) {
+    if (!groups[task.taskName]) {
+      groups[task.taskName] = [];
+      groupOrder.push(task.taskName);
+    }
+    groups[task.taskName].push(task);
+  }
 
   function updateRange(idx: number, field: "startStr" | "endStr", value: string) {
     setEditedRanges((prev) =>
@@ -60,16 +64,16 @@ export default function DrawSavePopup({ ranges, onSave, onClose }: Props) {
   }
 
   function handleSave() {
-    if (!selectedMaster) return;
+    if (!selectedTask) return;
     for (const r of editedRanges) {
       if (r.minutes <= 0) continue;
       addTimeBlock({
         date: currentDate,
-        taskId: "",
-        taskName: selectedMaster.name,
-        detail: "",
-        workType: selectedMaster.workType,
-        color: selectedMaster.color,
+        taskId: selectedTask.id,
+        taskName: selectedTask.taskName,
+        detail: selectedTask.detail,
+        workType: selectedTask.workType,
+        color: selectedTask.color,
         start: r.startStr,
         end: r.endStr,
         durationMinutes: r.minutes,
@@ -86,6 +90,7 @@ export default function DrawSavePopup({ ranges, onSave, onClose }: Props) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="bg-[var(--color-paper)] rounded-lg shadow-xl w-full max-w-sm mx-4 flex flex-col max-h-[85vh]">
+
         {/* 헤더 */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-line)]">
           <span className="font-gothic text-sm font-bold tracking-widest text-[var(--color-ink)] uppercase">
@@ -102,18 +107,22 @@ export default function DrawSavePopup({ ranges, onSave, onClose }: Props) {
           </button>
         </div>
 
-        {/* 구간 목록 */}
-        <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3">
-          {editedRanges.length === 0 && (
-            <p className="font-handwriting text-base text-[var(--color-ink-muted)] text-center py-4">
-              선택된 시간 없음
-            </p>
-          )}
+        <div className="flex-1 overflow-y-auto flex flex-col">
 
-          {editedRanges.map((r, i) => (
-            <div key={i} className="flex flex-col gap-1.5 p-3 rounded bg-[var(--color-paper-dark)]">
-              <div className="flex items-center gap-2">
-                {/* 시작 시간 */}
+          {/* 시간 구간 목록 */}
+          <div className="px-4 py-3 flex flex-col gap-2.5">
+            <span className="font-gothic text-[10px] font-bold tracking-widest text-[var(--color-ink-muted)] uppercase">
+              시간
+            </span>
+
+            {editedRanges.length === 0 && (
+              <p className="font-handwriting text-base text-[var(--color-ink-muted)] py-2">
+                선택된 시간 없음
+              </p>
+            )}
+
+            {editedRanges.map((r, i) => (
+              <div key={i} className="flex items-center gap-2 px-3 py-2 rounded bg-[var(--color-paper-dark)]">
                 <input
                   type="time"
                   value={r.startStr}
@@ -121,73 +130,94 @@ export default function DrawSavePopup({ ranges, onSave, onClose }: Props) {
                   className="font-gothic text-sm bg-transparent border-b border-[var(--color-line)] outline-none text-[var(--color-ink)] pb-0.5 w-[5.5rem]"
                 />
                 <span className="font-gothic text-[10px] text-[var(--color-ink-muted)]">~</span>
-                {/* 종료 시간 */}
                 <input
                   type="time"
                   value={r.endStr}
                   onChange={(e) => updateRange(i, "endStr", e.target.value)}
                   className="font-gothic text-sm bg-transparent border-b border-[var(--color-line)] outline-none text-[var(--color-ink)] pb-0.5 w-[5.5rem]"
                 />
-                {/* 계산된 분 수 */}
                 <span className="font-gothic text-[10px] text-[var(--color-ink-muted)] ml-auto shrink-0">
                   {r.minutes > 0 ? formatDuration(r.minutes) : "—"}
                 </span>
               </div>
-            </div>
-          ))}
+            ))}
 
-          {/* 합계 */}
-          {editedRanges.length > 0 && (
-            <div className="flex justify-between items-center px-1 pt-1 border-t border-[var(--color-line)]">
-              <span className="font-gothic text-[10px] text-[var(--color-ink-muted)] uppercase tracking-widest">
-                Total
-              </span>
-              <span className="font-handwriting text-base text-[var(--color-ink)]">
-                {formatDuration(totalMinutes)}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* 태스크 선택 + 저장 */}
-        <div className="border-t border-[var(--color-line)] px-4 py-3 flex flex-col gap-2">
-          {taskMasters.length === 0 ? (
-            <p className="font-handwriting text-sm text-[var(--color-ink-muted)] text-center py-1">
-              업무명을 먼저 등록해주세요
-            </p>
-          ) : (
-            <div className="flex items-center gap-2">
-              {/* 태스크 선택 드롭다운 */}
-              <div className="relative flex-1">
-                <select
-                  value={selectedMasterId}
-                  onChange={(e) => setSelectedMasterId(e.target.value)}
-                  className="w-full font-handwriting text-base bg-transparent border-b border-[var(--color-line)]
-                             outline-none text-[var(--color-ink)] pb-0.5 appearance-none cursor-pointer pr-5"
-                >
-                  {taskMasters.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.name}
-                    </option>
-                  ))}
-                </select>
-                <span className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-ink-muted)] text-[9px]">
-                  ▾
+            {editedRanges.length > 0 && (
+              <div className="flex justify-between items-center px-1 pt-1 border-t border-[var(--color-line)]">
+                <span className="font-gothic text-[10px] text-[var(--color-ink-muted)] uppercase tracking-widest">Total</span>
+                <span className="font-handwriting text-base text-[var(--color-ink)]">
+                  {formatDuration(totalMinutes)}
                 </span>
               </div>
+            )}
+          </div>
 
-              {/* 저장 버튼 */}
-              <button
-                onClick={handleSave}
-                disabled={!selectedMaster || totalMinutes <= 0}
-                className="shrink-0 font-gothic text-xs font-bold px-3 py-1.5 rounded
-                           bg-[var(--color-ink)] text-[var(--color-paper)]
-                           hover:opacity-80 transition-opacity disabled:opacity-35"
-              >
-                저장
-              </button>
-            </div>
-          )}
+          {/* 태스크 선택 — 오늘의 Task 목록 (TimeBlockPopup 패턴 동일) */}
+          <div className="px-4 pb-3 flex flex-col gap-1.5">
+            <span className="font-gothic text-[10px] font-bold tracking-widest text-[var(--color-ink-muted)] uppercase">
+              Task
+            </span>
+
+            {tasks.length === 0 ? (
+              <p className="font-handwriting text-sm text-[var(--color-ink-muted)]">
+                오늘 등록된 Task가 없습니다
+              </p>
+            ) : (
+              <div className="flex flex-col gap-0.5 max-h-44 overflow-y-auto">
+                {groupOrder.map((name) => (
+                  <div key={name} className="flex flex-col gap-0.5">
+                    {groups[name].map((task) => (
+                      <label
+                        key={task.id}
+                        className="flex items-center gap-2 px-2 py-1.5 rounded-sm cursor-pointer hover:bg-[var(--color-paper-dark)]"
+                        style={{
+                          backgroundColor: selectedTaskId === task.id ? task.color + "33" : undefined,
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          name="draw-task"
+                          value={task.id}
+                          checked={selectedTaskId === task.id}
+                          onChange={() => setSelectedTaskId(task.id)}
+                          className="accent-[var(--color-ink-muted)]"
+                        />
+                        <span className="flex-1 font-handwriting text-base leading-5 text-[var(--color-ink)]">
+                          {task.taskName}
+                          {task.detail && (
+                            <span className="text-[var(--color-ink-muted)] text-sm ml-1">
+                              — {task.detail}
+                            </span>
+                          )}
+                        </span>
+                        <span
+                          className="ml-auto w-2 h-2 rounded-full shrink-0"
+                          style={{ backgroundColor: task.color }}
+                        />
+                      </label>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 하단 버튼 */}
+        <div className="border-t border-[var(--color-line)] px-4 py-3 flex gap-2 justify-end">
+          <button
+            onClick={onClose}
+            className="font-gothic text-xs px-3 py-1.5 border border-[var(--color-line)] rounded-sm text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
+          >
+            취소
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={!selectedTask || totalMinutes <= 0}
+            className="font-gothic text-xs font-bold px-3 py-1.5 rounded-sm bg-[var(--color-ink)] text-[var(--color-paper)] disabled:opacity-30 hover:opacity-80 transition-opacity"
+          >
+            저장
+          </button>
         </div>
       </div>
     </div>
