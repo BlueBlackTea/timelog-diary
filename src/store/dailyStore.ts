@@ -46,6 +46,13 @@ export interface DayData {
   totalMinutes: number;
 }
 
+export interface TaskMaster {
+  id: string;
+  name: string;
+  workType: WorkType;
+  color: string;
+}
+
 export interface ActiveTimer {
   taskId: string;
   taskName: string;
@@ -62,6 +69,7 @@ interface DailyStore {
   timeBlocks: TimeBlock[];
   allDayTotals: Record<string, number>;
   activeTimer: ActiveTimer | null;
+  taskMasters: TaskMaster[];
 
   setCurrentDate: (date: string) => void;
   setComment: (comment: string) => void;
@@ -77,6 +85,9 @@ interface DailyStore {
   recalcTotalMinutes: () => void;
   startTimer: (task: Task) => void;
   stopTimer: () => void;
+  addTaskMaster: (master: Omit<TaskMaster, "id">) => void;
+  updateTaskMaster: (id: string, updates: Partial<Omit<TaskMaster, "id">>) => void;
+  removeTaskMaster: (id: string) => void;
 }
 
 function genId() {
@@ -99,6 +110,7 @@ export const useDailyStore = create<DailyStore>()(
       timeBlocks: [],
       allDayTotals: {},
       activeTimer: null,
+      taskMasters: [],
 
       setCurrentDate: (date) =>
         set({ currentDate: date, day: { ...get().day, date } }),
@@ -170,6 +182,23 @@ export const useDailyStore = create<DailyStore>()(
           };
         }),
 
+      addTaskMaster: (master) =>
+        set((s) => ({
+          taskMasters: [...s.taskMasters, { ...master, id: `tm_${genId()}` }],
+        })),
+
+      updateTaskMaster: (id, updates) =>
+        set((s) => ({
+          taskMasters: s.taskMasters.map((m) =>
+            m.id === id ? { ...m, ...updates } : m
+          ),
+        })),
+
+      removeTaskMaster: (id) =>
+        set((s) => ({
+          taskMasters: s.taskMasters.filter((m) => m.id !== id),
+        })),
+
       startTimer: (task) =>
         set({
           activeTimer: {
@@ -210,6 +239,7 @@ export const useDailyStore = create<DailyStore>()(
         tasks: s.tasks,
         timeBlocks: s.timeBlocks,
         allDayTotals: s.allDayTotals,
+        taskMasters: s.taskMasters,
         // activeTimer 제외 — 새로고침 시 타이머 초기화
       }),
     }

@@ -22,12 +22,13 @@ import { useResizeObserver } from "@/hooks/useResizeObserver";
 interface TaskNameRowProps {
   taskName: string;
   color: string;
+  workType: string;
   allCompleted: boolean;
   activeTimer: ActiveTimer | null;
   onStartTimer: () => void;
 }
 
-function TaskNameRow({ taskName, color, allCompleted, activeTimer, onStartTimer }: TaskNameRowProps) {
+function TaskNameRow({ taskName, color, workType, allCompleted, activeTimer, onStartTimer }: TaskNameRowProps) {
   const { ref, width } = useResizeObserver<HTMLSpanElement>();
   const isRunning = activeTimer?.taskName === taskName;
 
@@ -49,6 +50,14 @@ function TaskNameRow({ taskName, color, allCompleted, activeTimer, onStartTimer 
           id={taskName}
         />
       </div>
+
+      {/* 업무유형 칩 */}
+      <span
+        className="font-gothic text-[9px] font-bold px-1.5 py-0.5 rounded-sm shrink-0"
+        style={{ backgroundColor: color + "33", color }}
+      >
+        {workType}
+      </span>
 
       {/* 포커스 타이머 시작 버튼 */}
       <button
@@ -137,6 +146,7 @@ export default function TaskList() {
       {groupOrder.map((name) => {
         const groupTasks = groups[name];
         const color = groupTasks[0].color;
+        const workType = groupTasks[0].workType;
         const allCompleted = groupTasks.every((t) => t.completed);
 
         return (
@@ -144,6 +154,7 @@ export default function TaskList() {
             <TaskNameRow
               taskName={name}
               color={color}
+              workType={workType}
               allCompleted={allCompleted}
               activeTimer={activeTimer}
               onStartTimer={() => startTimer(groupTasks[0])}
