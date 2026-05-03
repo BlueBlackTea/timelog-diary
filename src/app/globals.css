@@ -1,10 +1,17 @@
-/* 나눔 노력하는동희 — 네이버 한글 CDN (로컬 파일 불필요) */
-@import url("https://hangeul.pstatic.net/hangeul_static/webfont/NanumNoRyeogHaNeunDongHeui/NanumNoRyeogHaNeunDongHeui.css");
+/* 나눔 노력하는동희 — jsDelivr CDN (로컬 파일 불필요) */
+@font-face {
+  font-family: 'DongheeWhoIsTryingHard';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/naverfont_06@1.0/Hardworking_donghee.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import "tailwindcss";
 
 @theme inline {
   /* 폰트 */
-  --font-nanum-donghi: "NanumNoRyeogHaNeunDongHeui";
+  --font-nanum-donghi: "DongheeWhoIsTryingHard";
   --font-schoolbell: var(--font-schoolbell);
   --font-gothic: var(--font-gothic);
 
@@ -34,9 +41,9 @@ body {
 
 /*
   손글씨 폰트 스택:
-  1순위: NanumNoRyeogHaNeunDongHeui (한글 — 네이버 CDN)
-  2순위: Schoolbell                  (영문 — Google Fonts)
-  3순위: cursive                     (최종 fallback)
+  1순위: DongheeWhoIsTryingHard (나눔 노력하는동희 — jsDelivr CDN)
+  2순위: Schoolbell              (영문 — Google Fonts)
+  3순위: cursive                 (최종 fallback)
 */
 .font-handwriting {
   font-family: var(--font-nanum-donghi), var(--font-schoolbell), cursive;
