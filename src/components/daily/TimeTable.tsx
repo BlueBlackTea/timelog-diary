@@ -113,14 +113,22 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
   const isPainting = useRef(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // 드로우: 포인터 위치에서 data-cell 셀 인덱스 추출
+  // 드로우: gridRef BoundingClientRect 기준 좌표 계산으로 cell index 결정
+  // elementFromPoint 대신 직접 계산 → implicit pointer capture 환경에서도 안정적
   function paintAt(clientX: number, clientY: number) {
-    if (mode === "view") return;
-    const el = document.elementFromPoint(clientX, clientY);
-    const cellEl = el?.closest("[data-cell]") as HTMLElement | null;
-    if (!cellEl) return;
-    const idx = Number(cellEl.dataset.cell);
-    if (isNaN(idx)) return;
+    if (mode === "view" || !gridRef.current) return;
+    const rect = gridRef.current.getBoundingClientRect();
+    const relX = clientX - rect.left - LABEL_W; // 레이블 열 제외
+    const relY = clientY - rect.top;
+
+    if (relX < 0 || relX >= rect.width - LABEL_W) return;
+    if (relY < 0 || relY >= 24 * ROW_H) return;
+
+    const col  = Math.min(COLS - 1, Math.floor((relX / (rect.width - LABEL_W)) * COLS));
+    const hour = Math.min(23, Math.floor(relY / ROW_H));
+    if (col < 0 || hour < 0) return;
+
+    const idx = hour * COLS + col;
     const next = new Set(paintedCells);
     mode === "draw" ? next.add(idx) : next.delete(idx);
     onCellsChange(next);
@@ -151,6 +159,7 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
       style={{
         height: 24 * ROW_H,
         touchAction: mode !== "view" ? "none" : undefined,
+        cursor: mode === "draw" ? "crosshair" : mode === "erase" ? "cell" : "default",
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -202,7 +211,7 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
               />
             ))}
 
-            {/* 드로우 모드: 10분 셀 (data-cell 속성) */}
+            {/* 드로우 모드: 10분 셀 하이라이트 (좌표 계산 방식 — data-cell 불필요) */}
             {mode !== "view" &&
               Array.from({ length: COLS }, (_, col) => {
                 const idx = h * COLS + col;
@@ -210,8 +219,7 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
                 return (
                   <div
                     key={col}
-                    data-cell={idx}
-                    className="absolute top-0"
+                    className="absolute top-0 pointer-events-none"
                     style={{
                       left: `${(col / COLS) * 100}%`,
                       width: `${100 / COLS}%`,
@@ -221,7 +229,6 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
                           ? "rgba(200,80,80,0.15)"
                           : "rgba(105,153,93,0.25)"
                         : "transparent",
-                      cursor: mode === "draw" ? "crosshair" : "cell",
                     }}
                   />
                 );
