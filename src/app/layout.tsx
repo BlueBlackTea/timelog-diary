@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Caveat, Noto_Sans_KR } from "next/font/google";
+import { Schoolbell, Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 
 // 한글 손글씨 폰트 — NanumDongHi (로컬)
@@ -11,11 +11,11 @@ const nanumDongHi = localFont({
   weight: "400",
 });
 
-// 영문 손글씨 폰트 — Caveat (Google Fonts)
-const caveat = Caveat({
-  weight: ["400", "600"],
+// 영문 손글씨 폰트 — Schoolbell (Google Fonts, 정식명 "Schoolbell" 한 단어)
+const schoolbell = Schoolbell({
+  weight: ["400"],
   subsets: ["latin"],
-  variable: "--font-caveat",
+  variable: "--font-schoolbell",
   display: "swap",
 });
 
@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${nanumDongHi.variable} ${caveat.variable} ${notoSansKR.variable} h-full`}
+      className={`${nanumDongHi.variable} ${schoolbell.variable} ${notoSansKR.variable} h-full`}
     >
       <body className="min-h-full bg-paper text-ink font-gothic antialiased">
         {children}

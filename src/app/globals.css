@@ -3,7 +3,7 @@
 @theme inline {
   /* 폰트 — next/font가 주입하는 CSS 변수 참조 */
   --font-nanum-donghi: var(--font-nanum-donghi);
-  --font-caveat: var(--font-caveat);
+  --font-schoolbell: var(--font-schoolbell);
   --font-gothic: var(--font-gothic);
 
   /* 페이퍼 색상 */
@@ -33,11 +33,11 @@ body {
 /*
   손글씨 폰트 스택:
   1순위: NanumDongHi (한글 — next/font/local, basePath 자동 처리)
-  2순위: Caveat       (영문 — Google Fonts)
+  2순위: Schoolbell   (영문 — Google Fonts)
   3순위: cursive      (최종 fallback)
 */
 .font-handwriting {
-  font-family: var(--font-nanum-donghi), var(--font-caveat), cursive;
+  font-family: var(--font-nanum-donghi), var(--font-schoolbell), cursive;
 }
 
 .font-gothic {
