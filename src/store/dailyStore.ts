@@ -79,6 +79,7 @@ interface DailyStore {
   addTask: (task: Omit<Task, "id">) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   toggleTask: (id: string) => void;
+  removeTask: (id: string) => void;
   addTimeBlock: (block: Omit<TimeBlock, "id">) => void;
   updateTimeBlock: (id: string, updates: Partial<TimeBlock>) => void;
   removeTimeBlock: (id: string) => void;
@@ -143,6 +144,9 @@ export const useDailyStore = create<DailyStore>()(
             t.id === id ? { ...t, completed: !t.completed } : t
           ),
         })),
+
+      removeTask: (id) =>
+        set((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) })),
 
       addTimeBlock: (block) => {
         set((s) => ({
@@ -234,7 +238,7 @@ export const useDailyStore = create<DailyStore>()(
     {
       name: "timelog-diary",
       partialize: (s) => ({
-        currentDate: s.currentDate,
+        // currentDate 제외 — 앱 로드 시 항상 오늘 날짜로 초기화
         day: s.day,
         tasks: s.tasks,
         timeBlocks: s.timeBlocks,
