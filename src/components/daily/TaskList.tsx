@@ -24,13 +24,14 @@ interface TaskNameRowProps {
   color: string;
   workType: string;
   allCompleted: boolean;
+  onDeleteGroup: () => void;
 }
 
-function TaskNameRow({ taskName, color, workType, allCompleted }: TaskNameRowProps) {
+function TaskNameRow({ taskName, color, workType, allCompleted, onDeleteGroup }: TaskNameRowProps) {
   const { ref, width } = useResizeObserver<HTMLSpanElement>();
 
   return (
-    <div className="flex items-center gap-2 px-3 pt-2 pb-0.5">
+    <div className="flex items-center gap-2 px-3 pt-2 pb-0.5 group/row">
       {/* 형광펜 + 업무명 */}
       <div className="relative flex-1" style={{ height: 20 }}>
         <span
@@ -55,21 +56,31 @@ function TaskNameRow({ taskName, color, workType, allCompleted }: TaskNameRowPro
       >
         {workType}
       </span>
+
+      {/* 그룹 전체 삭제 버튼 */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onDeleteGroup(); }}
+        title="그룹 전체 삭제"
+        className="shrink-0 opacity-0 group-hover/row:opacity-40 hover:!opacity-100 transition-opacity
+                   text-[var(--color-ink-muted)] hover:text-red-400 font-gothic text-xs leading-none"
+      >
+        ×
+      </button>
     </div>
   );
 }
 
-// ── 개별 내용 행 (체크박스 + detail 텍스트 + ▶ 타이머 버튼) ──────────────
+// ── 개별 내용 행 (체크박스 + detail 텍스트 + ▶ 타이머 버튼 + × 삭제) ──────────────
 interface DetailRowProps {
   task: Task;
 }
 
 function DetailRow({ task }: DetailRowProps) {
-  const { toggleTask, activeTimer, startTimer } = useDailyStore();
+  const { toggleTask, removeTask, activeTimer, startTimer } = useDailyStore();
   const isRunning = activeTimer?.taskId === task.id;
 
   return (
-    <label className="flex items-center gap-2 px-4 py-0.5 cursor-pointer group">
+    <label className="flex items-center gap-2 px-4 py-0.5 cursor-pointer group/detail">
       {/* T1-08: 완료 체크박스 */}
       <input
         type="checkbox"
@@ -115,13 +126,27 @@ function DetailRow({ task }: DetailRowProps) {
           </svg>
         )}
       </button>
+
+      {/* 항목 삭제 버튼 */}
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          removeTask(task.id);
+        }}
+        title="삭제"
+        className="shrink-0 opacity-0 group-hover/detail:opacity-40 hover:!opacity-100 transition-opacity
+                   text-[var(--color-ink-muted)] hover:text-red-400 font-gothic text-xs leading-none"
+      >
+        ×
+      </button>
     </label>
   );
 }
 
 // ── 메인 TaskList ─────────────────────────────────────────────────────────
 export default function TaskList() {
-  const { tasks } = useDailyStore();
+  const { tasks, removeTask } = useDailyStore();
 
   if (tasks.length === 0) {
     return (
@@ -158,6 +183,7 @@ export default function TaskList() {
               color={color}
               workType={workType}
               allCompleted={allCompleted}
+              onDeleteGroup={() => groupTasks.forEach((t) => removeTask(t.id))}
             />
             {groupTasks.map((task) => (
               <DetailRow key={task.id} task={task} />
