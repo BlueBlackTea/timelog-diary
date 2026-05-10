@@ -176,13 +176,22 @@ export const useDailyStore = create<DailyStore>()(
 
       recalcTotalMinutes: () =>
         set((s) => {
-          const total = s.timeBlocks.reduce(
-            (sum, b) => sum + b.durationMinutes,
-            0
-          );
+          // 날짜별로 각각 합산 → allDayTotals 전체 갱신
+          const newTotals = { ...s.allDayTotals };
+          for (const b of s.timeBlocks) {
+            newTotals[b.date] = (newTotals[b.date] ?? 0);
+          }
+          // 모든 날짜 재계산 (삭제 반영)
+          const dateSet = new Set(s.timeBlocks.map((b) => b.date));
+          for (const date of dateSet) {
+            newTotals[date] = s.timeBlocks
+              .filter((b) => b.date === date)
+              .reduce((sum, b) => sum + b.durationMinutes, 0);
+          }
+          const currentTotal = newTotals[s.currentDate] ?? 0;
           return {
-            day: { ...s.day, totalMinutes: total },
-            allDayTotals: { ...s.allDayTotals, [s.currentDate]: total },
+            day: { ...s.day, totalMinutes: currentTotal },
+            allDayTotals: newTotals,
           };
         }),
 

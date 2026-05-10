@@ -151,7 +151,7 @@ interface TooltipInfo {
 // ── 메인 컴포넌트 body ───────────────────────────────────────────────────
 
 export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTableProps) {
-  const { timeBlocks, removeTimeBlock } = useDailyStore();
+  const { timeBlocks, removeTimeBlock, currentDate } = useDailyStore();
 
   const isPainting  = useRef(false);
   const lockedHour  = useRef<number | null>(null);
@@ -221,7 +221,10 @@ export default function TimeTable({ mode, paintedCells, onCellsChange }: TimeTab
 
   // ── 렌더링 ─────────────────────────────────────────────────────────────
 
-  const allSegments = timeBlocks.flatMap(blockToSegments);
+  // 선택된 날짜의 블록만 렌더링
+  const allSegments = timeBlocks
+    .filter((b) => b.date === currentDate)
+    .flatMap(blockToSegments);
   const cellW = gridContentW / COLS; // 셀 하나의 픽셀 너비
 
   return (

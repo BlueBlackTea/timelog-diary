@@ -46,6 +46,7 @@ export default function TaskInput() {
     e.preventDefault();
     if (!taskName.trim()) return;
 
+    const dayTasks = tasks.filter((t) => t.date === currentDate);
     addTask({
       date: currentDate,
       taskName: taskName.trim(),
@@ -53,7 +54,7 @@ export default function TaskInput() {
       workType,
       color: WORK_TYPE_COLORS[workType],
       completed: false,
-      order: tasks.length,
+      order: dayTasks.length,
     });
 
     setDetail("");
@@ -61,7 +62,7 @@ export default function TaskInput() {
   }
 
   const isExistingName = tasks.some(
-    (t) => t.taskName === taskName.trim() && taskName.trim() !== ""
+    (t) => t.date === currentDate && t.taskName === taskName.trim() && taskName.trim() !== ""
   );
 
   return (

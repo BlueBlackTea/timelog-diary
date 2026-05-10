@@ -146,9 +146,12 @@ function DetailRow({ task }: DetailRowProps) {
 
 // ── 메인 TaskList ─────────────────────────────────────────────────────────
 export default function TaskList() {
-  const { tasks, removeTask } = useDailyStore();
+  const { tasks, removeTask, currentDate } = useDailyStore();
 
-  if (tasks.length === 0) {
+  // 선택된 날짜의 태스크만 표시
+  const dayTasks = tasks.filter((t) => t.date === currentDate);
+
+  if (dayTasks.length === 0) {
     return (
       <p className="px-3 pt-[5px] pb-0 font-handwriting text-base leading-7 text-[var(--color-line)]">
         오늘의 업무를 추가하세요.
@@ -160,7 +163,7 @@ export default function TaskList() {
   const groupOrder: string[] = [];
   const groups: Record<string, Task[]> = {};
 
-  for (const task of tasks) {
+  for (const task of dayTasks) {
     if (!groups[task.taskName]) {
       groups[task.taskName] = [];
       groupOrder.push(task.taskName);
