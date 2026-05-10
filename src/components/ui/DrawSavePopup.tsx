@@ -26,12 +26,15 @@ function formatDuration(minutes: number): string {
 export default function DrawSavePopup({ ranges, onSave, onClose }: Props) {
   const { tasks, addTimeBlock, currentDate } = useDailyStore();
 
+  // 선택된 날짜의 태스크만 표시
+  const dayTasks = tasks.filter((t) => t.date === currentDate);
+
   const [editedRanges, setEditedRanges] = useState<CellRange[]>(() =>
     ranges.map((r) => ({ ...r }))
   );
   // 오늘의 task.id 단위로 선택
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(
-    tasks.length > 0 ? tasks[0].id : null
+    dayTasks.length > 0 ? dayTasks[0].id : null
   );
 
   const totalMinutes = useMemo(
@@ -39,12 +42,12 @@ export default function DrawSavePopup({ ranges, onSave, onClose }: Props) {
     [editedRanges]
   );
 
-  const selectedTask = tasks.find((t) => t.id === selectedTaskId);
+  const selectedTask = dayTasks.find((t) => t.id === selectedTaskId);
 
   // taskName 기준 그룹핑 (TimeBlockPopup과 동일 패턴)
   const groupOrder: string[] = [];
-  const groups: Record<string, typeof tasks> = {};
-  for (const task of tasks) {
+  const groups: Record<string, typeof dayTasks> = {};
+  for (const task of dayTasks) {
     if (!groups[task.taskName]) {
       groups[task.taskName] = [];
       groupOrder.push(task.taskName);
@@ -158,9 +161,9 @@ export default function DrawSavePopup({ ranges, onSave, onClose }: Props) {
               Task
             </span>
 
-            {tasks.length === 0 ? (
+            {dayTasks.length === 0 ? (
               <p className="font-handwriting text-sm text-[var(--color-ink-muted)]">
-                오늘 등록된 Task가 없습니다
+                이 날 등록된 Task가 없습니다
               </p>
             ) : (
               <div className="flex flex-col gap-0.5 max-h-44 overflow-y-auto">
