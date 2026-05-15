@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useExtensionBridge } from "@/hooks/useExtensionBridge";
 import DailyHeader from "@/components/layout/DailyHeader";
 import DailyFooter from "@/components/layout/DailyFooter";
 import TaskPanel from "@/components/layout/TaskPanel";
@@ -21,6 +22,7 @@ const DEFAULT_COLS: Cols = { cal: 50, time: 25, task: 25 };
 const MIN_GROW = 8; // 최소 flex-grow (≈ 8% → ~80px @ 1000px)
 
 export default function DailyPage() {
+  useExtensionBridge(); // Chrome 확장 → stopTimer() 브릿지
   const [cols, setCols] = useState<Cols>(DEFAULT_COLS);
   const containerRef = useRef<HTMLElement>(null);
 
